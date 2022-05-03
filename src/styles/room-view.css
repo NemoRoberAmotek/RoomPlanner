@@ -1,0 +1,42 @@
+.room-view {
+  position: relative;
+}
+
+.room {
+  border: 1px solid black;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transition: transform 0.3s ease;
+}
+
+.controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+}
+
+.furniture-in-view {
+  position: absolute;
+  background-color: var(--color-default);
+  cursor: pointer;
+  color: white;
+  top: 0;
+  left: 0;
+  opacity: 0.7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.furniture-in-view.selected {
+  background-color: var(--color-primary);
+  color: white;
+  cursor: move;
+}

@@ -1,0 +1,131 @@
+.app-layout {
+  display: grid;
+  grid-template-columns: 25% auto 25%;
+  height: 100vh;
+}
+
+@media screen and (min-width: 1536px) {
+  .app-layout {
+    grid-template-columns: 20% auto 20%;
+  }
+}
+
+@media screen and (min-width: 1920px) {
+  .app-layout {
+    grid-template-columns: 15% auto 15%;
+  }
+}
+
+.sidebar {
+  background-color: white;
+  display: grid;
+  grid-template-rows: 70px 1fr auto;
+  height: 100vh;
+  z-index: 10;
+  position: relative;
+}
+
+.sidebar-header {
+  padding: 1rem;
+}
+
+.sidebar-content {
+  padding: 1rem;
+  overflow: hidden;
+}
+
+.sidebar-footer {
+  padding: 1rem;
+}
+
+.panel-menu {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.action-alert {
+  background-color: var(--color-black);
+  color: white;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 25%);
+  display: flex;
+  align-items: center;
+  grid-gap: 1rem;
+}
+
+.action-alert > div > p {
+  margin-bottom: 0.25rem;
+}
+
+.icon-link {
+  display: flex;
+  align-items: center;
+  grid-gap: 0.5rem;
+  padding: 0.5rem;
+  cursor: pointer;
+  font-size: 0.833rem;
+  font-weight: bold;
+}
+
+.icon-link.reverse {
+  flex-direction: row-reverse;
+}
+
+.room-name {
+  display: flex;
+  align-items: center;
+}
+
+.room-name > input {
+  cursor: default;
+  border: 2px solid transparent;
+  background-color: transparent;
+  padding: 0.5rem;
+}
+
+.room-name input {
+  font-size: 1rem;
+}
+
+.room-name svg {
+  cursor: pointer;
+}
+
+.furniture-list {
+  height: calc(100% - 2rem);
+  overflow-y: auto;
+}
+
+.category-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+  padding: 1rem 0;
+  margin-top: 0.5rem;
+}
+
+.category-title {
+  display: flex;
+  align-items: center;
+  grid-gap: 0.5rem;
+}
+
+.category-list-furniture {
+  display: flex;
+  flex-direction: column;
+  grid-gap: 0.5rem;
+}
+
+.furniture-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid var(--color-default);
+  padding: 0.5rem;
+  cursor: move;
+  border-radius: 0.25rem;
+}

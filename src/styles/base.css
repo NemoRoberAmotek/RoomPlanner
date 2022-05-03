@@ -1,0 +1,181 @@
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap");
+
+body,
+html {
+  margin: 0;
+  --color-primary: #4f95ff;
+  --color-default: #949494;
+  --color-black: #292929;
+  --color-success: #00b112;
+  --color-danger: ;
+  color: #292929;
+  font-family: "Lato", sans-serif;
+  background-color: #f5f5f5;
+  font-size: 16px;
+  overflow: hidden;
+}
+
+[tabIndex] {
+  border: 1px solid transparent;
+}
+
+body *:focus-visible,
+body *:focus {
+  outline: 0;
+  border-color: var(--color-primary);
+}
+
+.button-primary,
+.button-secondary,
+.button-default {
+  font-size: 0.833rem;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  border: 0;
+  cursor: pointer;
+}
+
+.button-primary {
+  background-color: var(--color-primary);
+  color: white;
+  border: 2px solid var(--color-primary);
+}
+
+.button-default {
+  border: 2px solid var(--color-default);
+  background-color: transparent;
+  color: var(--color-default);
+}
+
+.button-secondary {
+  border: 2px solid var(--color-primary);
+  background-color: transparent;
+  color: var(--color-primary);
+}
+
+.button-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.color-primary {
+  color: var(--color-primary);
+}
+
+.color-default {
+  color: var(--color-default);
+}
+
+.color-success {
+  color: var(--color-success);
+}
+
+.color-danger {
+  color: var(--color-danger);
+}
+
+.welcome-screen {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  padding: 3rem;
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0px 3px 10px 0px rgba(0, 0, 0, 5%);
+}
+
+.welcome-screen p {
+  margin-bottom: 1.5rem;
+}
+
+.button-box {
+  margin-bottom: 1rem;
+}
+
+.render-not-allowed {
+  background-color: var(--color-black);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  margin-bottom: 1rem;
+}
+
+h1 {
+  font-size: 2.074rem;
+  font-weight: bold;
+}
+
+h2 {
+  font-size: 1.728rem;
+}
+
+h3 {
+  font-size: 1.44rem;
+}
+
+h4 {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+p {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.p-bold {
+  font-weight: bold;
+}
+
+label {
+  font-size: 0.833rem;
+}
+
+input {
+  padding: 0.5rem 0.5rem;
+  border-radius: 0px;
+  border: 1px solid var(--color-default);
+  width: 100%;
+}
+
+input:focus,
+input:focus-visible {
+  border-width: 2px;
+  border-color: var(--color-primary);
+  outline: 0;
+}
+
+small {
+  font-size: 0.833rem;
+}
+
+.small-bold {
+  font-weight: bold;
+}
+
+.form-control {
+  display: flex;
+  flex-direction: column;
+  grid-gap: 0.5rem;
+  max-width: 150px;
+  margin: 0.5rem 0;
+}
