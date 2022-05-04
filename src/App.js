@@ -6,7 +6,9 @@ import useLoader from "./hooks/useLoader";
 import useRenderAllowed from "./hooks/useRenderAllowed";
 import RoomProvider from "./contexts/RoomProvider";
 import ActionProvider from "./contexts/ActionProvider";
-import ViewProvider from "./contexts/ViewProvider";
+import GlobalSettingsProvider from "./contexts/GlobalSettingsProvider";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 const Main = lazy(() => import("./views/Main"));
 
@@ -24,13 +26,15 @@ function App() {
         {loggedIn && (
           <Suspense fallback={loader}>
             <ErrorBoundary>
-              <ActionProvider>
-                <ViewProvider>
-                  <RoomProvider>
-                    <Main />
-                  </RoomProvider>
-                </ViewProvider>
-              </ActionProvider>
+              <GlobalSettingsProvider>
+                <ActionProvider>
+                  <DndProvider backend={HTML5Backend}>
+                    <RoomProvider>
+                      <Main />
+                    </RoomProvider>
+                  </DndProvider>
+                </ActionProvider>
+              </GlobalSettingsProvider>
             </ErrorBoundary>
           </Suspense>
         )}

@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
-import { useView } from "../contexts/ViewProvider";
 
-const useRoomDomRect = () => {
+const useRoomDomRect = (scale, rotate) => {
   const [roomBox, setRoomBox] = useState({});
-  const { scale, rotate } = useView();
 
   useEffect(() => {
     const room = document.querySelector(".room");

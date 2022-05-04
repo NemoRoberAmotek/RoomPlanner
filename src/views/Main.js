@@ -3,8 +3,6 @@ import ObjectsPanel from "../components/ObjectsPanel";
 import PropertiesPanel from "../components/PropertiesPanel";
 import AddRoomForm from "../components/AddRoomForm.js";
 import RoomView from "../components/view/RoomView";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
 import { useRoom } from "../contexts/RoomProvider";
 
 const Main = () => {
@@ -14,11 +12,9 @@ const Main = () => {
 
   return (
     <div className="app-layout">
-      <DndProvider backend={HTML5Backend}>
-        <ObjectsPanel />
-        <RoomView />
-        <PropertiesPanel />
-      </DndProvider>
+      <ObjectsPanel />
+      <RoomView />
+      <PropertiesPanel />
     </div>
   );
 };

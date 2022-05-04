@@ -1,11 +1,12 @@
 import PropTypes from "prop-types";
-import { useView } from "../../contexts/ViewProvider";
+import { useRoom } from "../../contexts/RoomProvider";
 import { useState, useEffect } from "react";
+import { getEmptyImage } from "react-dnd-html5-backend";
 import { useDrag } from "react-dnd";
 import { ItemTypes } from "../../Constants";
 
 const FurnitureItem = ({ furniture }) => {
-  const { setSelectedFurniture } = useView();
+  const { scale, setSelectedFurniture } = useRoom();
   const [selected, setSelected] = useState(false);
 
   useEffect(() => {
@@ -21,7 +22,7 @@ const FurnitureItem = ({ furniture }) => {
     return () => item.removeEventListener("focusout", () => setSelected(false));
   }, [furniture]);
 
-  const [{ isDragging }, drag] = useDrag(
+  const [{ isDragging }, drag, preview] = useDrag(
     () => ({
       type: ItemTypes.FURNITURE,
       item: furniture,
@@ -32,16 +33,22 @@ const FurnitureItem = ({ furniture }) => {
     [furniture]
   );
 
+  useEffect(() => {
+    preview(getEmptyImage(), { captureDraggingState: true });
+  }, [preview]);
+
   return (
     <div
       style={{
-        width: furniture.x,
-        height: furniture.y,
-        transform: `translate(${furniture.position.posX}px, ${furniture.position.posY}px)`,
+        width: furniture.x * scale,
+        height: furniture.y * scale,
+        transform: `translate(${furniture.position.posX * scale}px, ${
+          furniture.position.posY * scale
+        }px)`,
         opacity: isDragging ? 0.3 : 1,
       }}
       id={`furniture-in-view-${furniture.placement_id}`}
-      ref={drag}
+      ref={selected ? drag : null}
       className={`furniture-in-view ${selected && "selected"}`}
       onClick={() => setSelected(true)}
       onKeyPress={() => setSelected(true)}

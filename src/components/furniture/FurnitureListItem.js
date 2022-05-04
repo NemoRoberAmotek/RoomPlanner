@@ -1,10 +1,15 @@
 import PropTypes from "prop-types";
 import { ItemTypes } from "../../Constants";
 import { useDrag } from "react-dnd";
+import useConvertUnits from "../../hooks/useConvertUnits";
+import { useGlobalSettings } from "../../contexts/GlobalSettingsProvider";
 
 console.log(ItemTypes);
 
 const FurnitureListItem = ({ furniture }) => {
+  const { units } = useGlobalSettings();
+  const convertUnits = useConvertUnits(units);
+
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ItemTypes.CARD,
     item: furniture,
@@ -21,7 +26,7 @@ const FurnitureListItem = ({ furniture }) => {
     >
       <small className="small-bold">{furniture.name}</small>
       <small className="color-default">
-        {furniture.x} - {furniture.y}cm
+        {convertUnits(furniture.x)} - {convertUnits(furniture.y)}
       </small>
     </div>
   );

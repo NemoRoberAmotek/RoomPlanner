@@ -1,4 +1,4 @@
-import { useView } from "../../contexts/ViewProvider";
+import { useRoom } from "../../contexts/RoomProvider";
 
 const Controls = () => {
   const {
@@ -6,7 +6,7 @@ const Controls = () => {
     rotateRoomRight,
     zoomRoomIn,
     zoomRoomOut,
-  } = useView();
+  } = useRoom();
 
   return (
     <div className="controls">

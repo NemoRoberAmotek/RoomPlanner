@@ -20,7 +20,7 @@ const RoomName = ({ name }) => {
     setIsEdit(false);
     setAction({
       title: "Room name was updated.",
-      message: `Room name was changed to ${room.name}`,
+      message: `Room name was changed to ${nameEditProps.value}`,
     });
   };
 
