@@ -29,8 +29,8 @@ const roomDummy = {
       id: 0,
       placement_id: "EEIF-EEEE-EEEE-EEE",
       name: "Table For 2",
-      x: 100,
-      y: 200,
+      width: 100,
+      length: 200,
       position: {
         posX: 300,
         posY: 0,
@@ -45,25 +45,70 @@ const RoomProvider = ({ children }) => {
   const [rotate, setRotate] = useState(0);
   const [scale, setScale] = useState(1.0);
   const [selectedFurniture, setSelectedFurniture] = useState(null);
-
-  const windowWidth = useWindowWidth();
   const [roomStyles, setRoomStyles] = useState({
     backgroundColor: room.color,
   });
 
+  const windowWidth = useWindowWidth();
   const roomBox = useRoomDomRect(scale, rotate);
   const { setAction } = useAction();
   const { adjustToRotation, snapToRoom, snapToOthers } = useComputation(
     room,
     rotate
   );
-
   const [
     rotateRoomLeft,
     rotateRoomRight,
     zoomRoomIn,
     zoomRoomOut,
   ] = useRotateAndZoom(scale, rotate, setScale, setRotate);
+
+  const updateRoomFurniture = useCallback(
+    (item) => {
+      const newFurniture = room.furniture.map((existing) => {
+        if (existing.placement_id === item.placement_id) {
+          return item;
+        } else {
+          return existing;
+        }
+      });
+
+      setRoom((room) => ({ ...room, furniture: newFurniture }));
+    },
+    [setRoom, room]
+  );
+
+  const removeFuniture = useCallback(
+    (item) => {
+      const newFurniture = room.furniture.filter(
+        (existing) => existing.placement_id !== item.placement_id
+      );
+
+      setRoom({ ...room, furniture: newFurniture });
+      setSelectedFurniture(null);
+    },
+    [room]
+  );
+
+  const updateAfterSelectedChange = useCallback(() => {
+    if (!selectedFurniture) return;
+    const [snappedPosX, snappedPosY] = snapToRoom(
+      selectedFurniture,
+      selectedFurniture.position.posX,
+      selectedFurniture.position.posY
+    );
+
+    const updatedItem = {
+      ...selectedFurniture,
+      position: {
+        posX: snappedPosX,
+        posY: snappedPosY,
+      },
+    };
+
+    updateRoomFurniture(updatedItem);
+    setSelectedFurniture(updatedItem);
+  }, [selectedFurniture, snapToRoom, updateRoomFurniture]);
 
   useEffect(() => {
     const ratio = room.length / room.width;
@@ -92,21 +137,6 @@ const RoomProvider = ({ children }) => {
     setRoom,
   ]);
 
-  const updateRoomFurniture = useCallback(
-    (item) => {
-      const newFurniture = room.furniture.map((existing) => {
-        if (existing.placement_id === item.placement_id) {
-          return item;
-        } else {
-          return existing;
-        }
-      });
-
-      setRoom((room) => ({ ...room, furniture: newFurniture }));
-    },
-    [setRoom, room]
-  );
-
   const moveFurniture = useCallback(
     (item, monitor) => {
       const diff = monitor.getDifferenceFromInitialOffset();
@@ -118,11 +148,19 @@ const RoomProvider = ({ children }) => {
         y: Math.round(diff.y / rate / scale),
       };
 
-      const posX = item.position.posX + ratedDiff.x;
-      const posY = item.position.posY + ratedDiff.y;
+      let posX = item.position.posX + ratedDiff.x;
+      let posY = item.position.posY + ratedDiff.y;
 
-      if (item.rotate === 90) {
-        console.log("rotate");
+      let error = false;
+
+      if (isNaN(posX) || isNaN(posY)) {
+        posX = 0;
+        posY = 0;
+        error = true;
+        setAction({
+          title: `Something went wrong`,
+          message: `${item.name} could not be moved. The position was reset.`,
+        });
       }
 
       const [rotatedX, rotatedY] = adjustToRotation(
@@ -149,11 +187,12 @@ const RoomProvider = ({ children }) => {
       };
 
       updateRoomFurniture(movedItem);
-
-      setAction({
-        title: `${item.name} moved`,
-        message: `${item.name} has moved in ${room.name}`,
-      });
+      if (!error) {
+        setAction({
+          title: `${item.name} moved`,
+          message: `${item.name} has moved in ${room.name}`,
+        });
+      }
     },
     [
       room,
@@ -175,8 +214,8 @@ const RoomProvider = ({ children }) => {
 
       const rate = room.computedWidth / room.width;
 
-      x = pos.x - roomX - item.x;
-      y = pos.y - roomY - item.y;
+      x = pos.x - roomX - item.width;
+      y = pos.y - roomY - item.length;
 
       const ratedPos = {
         x: Math.round(x / rate),
@@ -218,19 +257,19 @@ const RoomProvider = ({ children }) => {
     (item) => {
       const rotation = !item.rotate;
 
-      const newX = item.y,
-        newY = item.x;
+      const newX = item.length,
+        newY = item.width;
 
       const [snappedX, snappedY] = snapToRoom(
-        { ...item, x: newX, y: newY },
+        { ...item, width: newX, length: newY },
         item.position.posX,
         item.position.posY
       );
 
       const rotatedItem = {
         ...item,
-        x: newX,
-        y: newY,
+        width: newX,
+        length: newY,
         position: {
           posX: snappedX,
           posY: snappedY,
@@ -284,6 +323,9 @@ const RoomProvider = ({ children }) => {
         drop,
         roomStyles,
         rotateFurniture,
+        updateRoomFurniture,
+        updateAfterSelectedChange,
+        removeFuniture,
       }}
     >
       {children}

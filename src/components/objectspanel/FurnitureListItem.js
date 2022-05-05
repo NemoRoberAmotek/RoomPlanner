@@ -4,8 +4,6 @@ import { useDrag } from "react-dnd";
 import useConvertUnits from "../../hooks/useConvertUnits";
 import { useGlobalSettings } from "../../contexts/GlobalSettingsProvider";
 
-console.log(ItemTypes);
-
 const FurnitureListItem = ({ furniture }) => {
   const { units } = useGlobalSettings();
   const convertUnits = useConvertUnits(units);
@@ -26,7 +24,7 @@ const FurnitureListItem = ({ furniture }) => {
     >
       <small className="small-bold">{furniture.name}</small>
       <small className="color-default">
-        {convertUnits(furniture.x)} - {convertUnits(furniture.y)}
+        {convertUnits(furniture.width)} - {convertUnits(furniture.length)}
       </small>
     </div>
   );

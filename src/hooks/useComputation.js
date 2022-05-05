@@ -11,8 +11,8 @@ const useComputation = (room, rotate) => {
           posY: 0,
         };
 
-      const itemX = furnitureItem.x;
-      const itemY = furnitureItem.y;
+      const itemX = furnitureItem.width;
+      const itemY = furnitureItem.length;
       const posX = furnitureItem.position.posX;
       const posY = furnitureItem.position.posY;
 
@@ -48,12 +48,12 @@ const useComputation = (room, rotate) => {
         newPosY = 0;
       }
 
-      if (posX > room.width - item.x) {
-        newPosX = room.width - item.x;
+      if (posX > room.width - item.width) {
+        newPosX = room.width - item.width;
       }
 
-      if (posY > room.length - item.y) {
-        newPosY = room.length - item.y;
+      if (posY > room.length - item.length) {
+        newPosY = room.length - item.length;
       }
 
       return [newPosX, newPosY];
@@ -71,31 +71,31 @@ const useComputation = (room, rotate) => {
 
     itemsNotThis.forEach((existing) => {
       if (
-        originalX + item.x < existing.position.posX + 5 &&
-        originalX + item.x > existing.position.posX - 5
+        originalX + item.width < existing.position.posX + 5 &&
+        originalX + item.width > existing.position.posX - 5
       ) {
-        const diff = originalX + item.x - existing.position.posX;
+        const diff = originalX + item.width - existing.position.posX;
         newPosX = originalX - diff;
       }
       if (
-        originalX < existing.position.posX + existing.x + 5 &&
-        originalX > existing.position.posX + existing.x - 5
+        originalX < existing.position.posX + existing.width + 5 &&
+        originalX > existing.position.posX + existing.width - 5
       ) {
         const diff = originalX - (existing.position.posX + existing.x);
         newPosX = originalX - diff;
       }
       if (
-        originalY + item.y < existing.position.posY + 5 &&
-        originalY + item.y > existing.position.posY - 5
+        originalY + item.length < existing.position.posY + 5 &&
+        originalY + item.length > existing.position.posY - 5
       ) {
-        const diff = originalY + item.y - existing.position.posY;
+        const diff = originalY + item.length - existing.position.posY;
         newPosY = originalY - diff;
       }
       if (
-        originalY < existing.position.posY + existing.y + 5 &&
-        originalY > existing.position.posY + existing.y - 5
+        originalY < existing.position.posY + existing.length + 5 &&
+        originalY > existing.position.posY + existing.length - 5
       ) {
-        const diff = originalY - (existing.position.posY + existing.y);
+        const diff = originalY - (existing.position.posY + existing.length);
         newPosY = originalY - diff;
       }
     });

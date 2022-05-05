@@ -2,6 +2,7 @@ import SidebarHeader from "./SidebarHeader";
 import SidebarFooter from "./SidebarFooter";
 import ActionAlert from "./ActionAlert";
 import IconLink from "./IconLink";
+import Properties from "./propertiespanel/Properties";
 
 function panelMenu() {
   return (
@@ -25,7 +26,9 @@ const PropertiesPanel = () => {
   return (
     <div className="sidebar">
       <SidebarHeader render={panelMenu} />
-      <div className="sidebar-content">Properties</div>
+      <div className="sidebar-content">
+        <Properties />
+      </div>
       <SidebarFooter render={() => <ActionAlert />} />
     </div>
   );

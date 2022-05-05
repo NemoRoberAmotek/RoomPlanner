@@ -155,7 +155,7 @@ select {
   padding: 0.5rem 0.5rem;
   border-radius: 0px;
   border: 1px solid var(--color-default);
-  width: 100%;
+  width: calc(100% - 1rem - 2px);
 }
 
 input:focus,
@@ -175,11 +175,16 @@ small {
   font-weight: bold;
 }
 
+.form-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 1rem;
+}
+
 .form-control {
   display: flex;
   flex-direction: column;
   grid-gap: 0.5rem;
-  max-width: 150px;
   margin: 0.5rem 0;
 }
 

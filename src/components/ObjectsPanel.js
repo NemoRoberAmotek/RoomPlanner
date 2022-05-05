@@ -1,4 +1,4 @@
-import FurnitureList from "./furniture/FurnitureList";
+import FurnitureList from "./objectspanel/FurnitureList";
 import SidebarHeader from "./SidebarHeader";
 import SidebarFooter from "./SidebarFooter";
 import RoomName from "./RoomName";
@@ -17,20 +17,20 @@ const categories = [
       {
         id: 0,
         name: "Table For 2",
-        x: 100,
-        y: 100,
+        width: 100,
+        length: 100,
       },
       {
         id: 1,
         name: "Table For 4",
-        x: 180,
-        y: 90,
+        width: 180,
+        length: 90,
       },
       {
         id: 2,
         name: "Table For 6",
-        x: 360,
-        y: 90,
+        width: 360,
+        length: 90,
       },
     ],
   },
@@ -42,20 +42,20 @@ const categories = [
       {
         id: 3,
         name: "Chair 1",
-        x: 90,
-        y: 90,
+        width: 90,
+        length: 90,
       },
       {
         id: 4,
         name: "Chair 2",
-        x: 180,
-        y: 90,
+        width: 180,
+        length: 90,
       },
       {
         id: 5,
         name: "Chair 3",
-        x: 360,
-        y: 90,
+        width: 360,
+        length: 90,
       },
     ],
   },

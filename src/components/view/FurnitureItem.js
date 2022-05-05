@@ -8,6 +8,8 @@ import { ItemTypes } from "../../Constants";
 
 const FurnitureItem = ({ furniture }) => {
   const [selected, setSelected] = useState(false);
+  const [showControls, setShowControls] = useState(true);
+
   const {
     room,
     rotate,
@@ -45,6 +47,19 @@ const FurnitureItem = ({ furniture }) => {
     preview(getEmptyImage(), { captureDraggingState: true });
   }, [preview]);
 
+  useEffect(() => {
+    document
+      .getElementById(furniture.placement_id)
+      .addEventListener("transitionstart", (e) => {
+        if (e.propertyName !== "background-color") {
+          setShowControls(false);
+        }
+      });
+    document
+      .getElementById(furniture.placement_id)
+      .addEventListener("transitionend", () => setShowControls(true));
+  }, [furniture]);
+
   return (
     <div
       style={{
@@ -63,8 +78,8 @@ const FurnitureItem = ({ furniture }) => {
       role="button"
       tabIndex="0"
     >
-      <small>{furniture.name}</small>
-      {selected && (
+      {showControls && <small>{furniture.name}</small>}
+      {selected && showControls && furniture.length !== furniture.width && (
         <button className="" onClick={() => rotateFurniture(furniture)}>
           Rotate
         </button>
