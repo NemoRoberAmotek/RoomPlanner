@@ -4,28 +4,40 @@ import { v4 as uuidv4 } from "uuid";
 const usePlaceAndMove = (roomBox, room) => {
   const { computedPositionToData } = useComputeItemSizeAndPosition(room);
 
-  const placeFurniture = (item, monitor) => {
-    // console.log("getSourceClientOffset");
-    // console.log(monitor.getSourceClientOffset());
-    // console.log("getClientOffset");
-    // console.log(monitor.getClientOffset());
-    // console.log(roomBox.x);
+  const placeFurniture = (item, monitor, move = false) => {
+    let clientOffset = monitor.getClientOffset();
+    if (move) clientOffset = monitor.getDifferenceFromInitialOffset();
+
+    let { x, y } = clientOffset;
+
+    console.log(move);
+
+    if (!move) {
+      x = Math.round(x - roomBox.x);
+      y = Math.round(y - roomBox.y);
+    }
 
     const mousePosInRoom = {
-      x: Math.round(monitor.getClientOffset().x - roomBox.x),
-      y: Math.round(monitor.getClientOffset().y - roomBox.y),
+      x,
+      y,
     };
 
     const dataPos = computedPositionToData(mousePosInRoom);
 
-    console.log(dataPos);
+    let adjustX = 0,
+      adjustY = 0;
+
+    if (!move) {
+      adjustX = item.x / 2;
+      adjustY = item.y / 2;
+    }
 
     const result = {
       placement_id: uuidv4(),
       ...item,
       position: {
-        posX: dataPos.x - item.x / 2,
-        posY: dataPos.y - item.y / 2,
+        posX: dataPos.x - adjustX,
+        posY: dataPos.y - adjustY,
       },
     };
 

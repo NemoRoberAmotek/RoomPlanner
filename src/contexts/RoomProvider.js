@@ -84,7 +84,9 @@ const RoomProvider = ({ children }) => {
     () => ({
       accept: [ItemTypes.CARD, ItemTypes.FURNITURE],
       drop(item, monitor) {
-        const furnitureItem = placeFurniture(item, monitor);
+        const move = monitor.getItemType() === "furniture";
+
+        const furnitureItem = placeFurniture(item, monitor, move);
 
         if (monitor.getItemType() === "card") {
           setRoom((room) => ({
