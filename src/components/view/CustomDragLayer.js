@@ -14,29 +14,55 @@ const layerStyles = {
   height: "100%",
 };
 
-function getItemStyles(initialOffset, currentOffset, roomBox, rotate, item) {
+function getItemStyles(
+  initialOffset,
+  currentOffset,
+  roomBox,
+  rotate,
+  item,
+  room,
+  scale
+) {
   if (!initialOffset || !currentOffset) {
     return {
       display: "none",
     };
   }
-  let { x, y } = currentOffset;
   let transform;
 
+  const diffX = currentOffset.x - initialOffset.x;
+  const diffY = currentOffset.y - initialOffset.y;
+
+  const rate = room.width / room.computedWidth;
+
   if (rotate === 90) {
-    transform = `translate(${y - roomBox.y}px, ${
-      roomBox.width - item.y + (x - roomBox.x) * -1
-    }px)`;
+    if (item.position) {
+      let posX = Math.round(item.position.posX / rate) + diffY / scale;
+      let posY = Math.round(item.position.posY / rate) - diffX / scale;
+
+      transform = `translate(${posX}px, ${posY}px)`;
+    }
   } else if (rotate === 180) {
-    transform = `translate(${
-      roomBox.width - item.x + (x - roomBox.x) * -1
-    }px, ${roomBox.height - item.y + (y - roomBox.y) * -1}px)`;
+    if (item.position) {
+      let posX = Math.round(item.position.posX / rate) - diffX / scale;
+      let posY = Math.round(item.position.posY / rate) - diffY / scale;
+
+      transform = `translate(${posX}px, ${posY}px)`;
+    }
   } else if (rotate === 270) {
-    transform = `translate(${
-      roomBox.height - item.x + (y - roomBox.y) * -1
-    }px, ${x - roomBox.x}px)`;
+    if (item.position) {
+      let posX = Math.round(item.position.posX / rate) - diffY / scale;
+      let posY = Math.round(item.position.posY / rate) + diffX / scale;
+
+      transform = `translate(${posX}px, ${posY}px)`;
+    }
   } else {
-    transform = `translate(${x - roomBox.x}px, ${y - roomBox.y}px)`;
+    if (item.position) {
+      let posX = Math.round(item.position.posX / rate) + diffX / scale;
+      let posY = Math.round(item.position.posY / rate) + diffY / scale;
+
+      transform = `translate(${posX}px, ${posY}px)`;
+    }
   }
 
   return {
@@ -47,7 +73,7 @@ function getItemStyles(initialOffset, currentOffset, roomBox, rotate, item) {
 
 const CustomDragLayer = () => {
   const roomBox = useRoomDomRect();
-  const { rotate } = useRoom();
+  const { room, rotate, scale } = useRoom();
 
   const {
     itemType,
@@ -73,7 +99,7 @@ const CustomDragLayer = () => {
   }
 
   if (!isDragging) {
-    // return null;
+    return null;
   }
 
   return (
@@ -84,7 +110,9 @@ const CustomDragLayer = () => {
           currentOffset,
           roomBox,
           rotate,
-          item
+          item,
+          room,
+          scale
         )}
       >
         {renderItem()}

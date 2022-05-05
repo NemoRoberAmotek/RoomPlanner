@@ -3,30 +3,22 @@ import { useRoom } from "../../contexts/RoomProvider";
 import { useState, useEffect } from "react";
 import { getEmptyImage } from "react-dnd-html5-backend";
 import { useDrag } from "react-dnd";
-import useComputeItemSizeAndPosition from "../../hooks/useComputeItemSizeAndPosition";
+import useComputation from "../../hooks/useComputation";
 import { ItemTypes } from "../../Constants";
 
 const FurnitureItem = ({ furniture }) => {
-  const { setSelectedFurniture } = useRoom();
   const [selected, setSelected] = useState(false);
-  const { room } = useRoom();
+  const {
+    room,
+    rotate,
+    rotateFurniture,
+    selectedFurniture,
+    setSelectedFurniture,
+  } = useRoom();
 
-  const { dataToComputed } = useComputeItemSizeAndPosition(room);
+  const { dataToComputed } = useComputation(room, rotate);
 
   const { width, height, posX, posY } = dataToComputed(furniture);
-
-  useEffect(() => {
-    setSelectedFurniture(furniture);
-  }, [furniture, setSelectedFurniture, selected]);
-
-  useEffect(() => {
-    const item = document.getElementById(
-      `furniture-in-view-${furniture.placement_id}`
-    );
-    item.addEventListener("focusout", () => setSelected(false));
-
-    return () => item.removeEventListener("focusout", () => setSelected(false));
-  }, [furniture]);
 
   const [{ isDragging }, drag, preview] = useDrag(
     () => ({
@@ -40,6 +32,16 @@ const FurnitureItem = ({ furniture }) => {
   );
 
   useEffect(() => {
+    if (!selectedFurniture) return setSelected(false);
+
+    if (selectedFurniture.placement_id === furniture.placement_id) {
+      setSelected(true);
+    } else {
+      setSelected(false);
+    }
+  }, [selectedFurniture, furniture]);
+
+  useEffect(() => {
     preview(getEmptyImage(), { captureDraggingState: true });
   }, [preview]);
 
@@ -51,16 +53,22 @@ const FurnitureItem = ({ furniture }) => {
         top: posY,
         left: posX,
         opacity: isDragging ? 0.3 : 1,
+        transform: `rotate(${furniture.rotate}deg)`,
       }}
-      id={`furniture-in-view-${furniture.placement_id}`}
+      id={`${furniture.placement_id}`}
       ref={selected ? drag : null}
       className={`furniture-in-view ${selected && "selected"}`}
-      onClick={() => setSelected(true)}
-      onKeyPress={() => setSelected(true)}
+      onClick={() => setSelectedFurniture(furniture)}
+      onKeyPress={() => setSelectedFurniture(furniture)}
       role="button"
       tabIndex="0"
     >
       <small>{furniture.name}</small>
+      {selected && (
+        <button className="" onClick={() => rotateFurniture(furniture)}>
+          Rotate
+        </button>
+      )}
     </div>
   );
 };

@@ -1,10 +1,10 @@
 import PropTypes from "prop-types";
 import { useRoom } from "../../contexts/RoomProvider";
-import useComputeItemSizeAndPosition from "../../hooks/useComputeItemSizeAndPosition";
+import useComputation from "../../hooks/useComputation";
 
 const FurnitureItemPreview = ({ furniture }) => {
   const { room } = useRoom();
-  const { dataToComputed } = useComputeItemSizeAndPosition(room);
+  const { dataToComputed } = useComputation(room);
   const { width, height } = dataToComputed(furniture);
 
   return (
@@ -12,6 +12,7 @@ const FurnitureItemPreview = ({ furniture }) => {
       style={{
         width: width,
         height: height,
+        transform: `rotate(${furniture.rotate}deg)`,
       }}
       id={`furniture-in-view-${furniture.placement_id}`}
       className={`furniture-in-view selected`}
