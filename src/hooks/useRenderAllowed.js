@@ -1,22 +1,18 @@
 import { useState, useEffect } from "react";
+import useWindowWidth from "./useWindowWidth";
 
 const useRenderAllowed = () => {
-  const [screenWidth, setScreenWidth] = useState();
   const [renderAllowed, setRenderAllowed] = useState(false);
 
-  useEffect(() => {
-    setScreenWidth(window.innerWidth);
-    window.addEventListener("resize", () => setScreenWidth(window.innerWidth));
-    return () => "resize", () => setScreenWidth(window.innerWidth);
-  }, []);
+  const windowWidth = useWindowWidth();
 
   useEffect(() => {
-    if (screenWidth < 1240) {
+    if (windowWidth < 1240) {
       setRenderAllowed(false);
     } else {
       setRenderAllowed(true);
     }
-  }, [screenWidth]);
+  }, [windowWidth]);
 
   return renderAllowed;
 };

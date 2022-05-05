@@ -23,8 +23,6 @@ function getItemStyles(initialOffset, currentOffset, roomBox, rotate, item) {
   let { x, y } = currentOffset;
   let transform;
 
-  console.log(roomBox.y);
-
   if (rotate === 90) {
     transform = `translate(${y - roomBox.y}px, ${
       roomBox.width - item.y + (x - roomBox.x) * -1

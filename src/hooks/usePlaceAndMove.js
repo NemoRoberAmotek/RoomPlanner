@@ -1,47 +1,37 @@
-import {
-  furniturePlacePosition,
-  furnitureMovePosition,
-} from "../helpers/furniturePosition";
-import useRoomDomRect from "./useRoomDomRect";
+import useComputeItemSizeAndPosition from "./useComputeItemSizeAndPosition";
 import { v4 as uuidv4 } from "uuid";
 
-const usePlaceAndMove = (scale, rotate) => {
-  const roomBox = useRoomDomRect(scale, rotate);
+const usePlaceAndMove = (roomBox, room) => {
+  const { computedPositionToData } = useComputeItemSizeAndPosition(room);
 
   const placeFurniture = (item, monitor) => {
-    const delta = monitor.getClientOffset();
+    // console.log("getSourceClientOffset");
+    // console.log(monitor.getSourceClientOffset());
+    // console.log("getClientOffset");
+    // console.log(monitor.getClientOffset());
+    // console.log(roomBox.x);
 
-    const position = furniturePlacePosition(
-      delta,
-      scale,
-      roomBox,
-      rotate,
-      item
-    );
+    const mousePosInRoom = {
+      x: Math.round(monitor.getClientOffset().x - roomBox.x),
+      y: Math.round(monitor.getClientOffset().y - roomBox.y),
+    };
 
-    const newItem = {
+    const dataPos = computedPositionToData(mousePosInRoom);
+
+    console.log(dataPos);
+
+    const result = {
       placement_id: uuidv4(),
       ...item,
-      position,
+      position: {
+        posX: dataPos.x - item.x / 2,
+        posY: dataPos.y - item.y / 2,
+      },
     };
 
-    return newItem;
+    return result;
   };
-
-  const moveFurniture = (item, monitor) => {
-    const diff = monitor.getDifferenceFromInitialOffset();
-
-    const position = furnitureMovePosition(diff, roomBox, rotate, item, scale);
-
-    const updatedItem = {
-      ...item,
-      position,
-    };
-
-    return updatedItem;
-  };
-
-  return [placeFurniture, moveFurniture];
+  return [placeFurniture];
 };
 
 export default usePlaceAndMove;

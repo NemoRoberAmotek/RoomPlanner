@@ -1,13 +1,17 @@
 .room-view {
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .room {
   border: 1px solid black;
-  position: absolute;
-  top: 50%;
-  left: 50%;
   transition: transform 0.3s ease;
+}
+
+.grid-row {
+  display: flex;
 }
 
 .controls {

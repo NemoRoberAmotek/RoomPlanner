@@ -1,5 +1,6 @@
-import { useState, createContext, useContext } from "react";
+import { useState, createContext, useContext, useEffect } from "react";
 import PropTypes from "prop-types";
+import useWindowWidth from "../hooks/useWindowWidth";
 import { useDrop } from "react-dnd";
 import { ItemTypes } from "../Constants";
 import useRoomDomRect from "../hooks/useRoomDomRect";
@@ -13,8 +14,22 @@ const roomDummy = {
   name: "My Living Room",
   width: 400,
   length: 200,
+  computedWidth: 400,
+  computedHeight: 200,
   color: "#FFFFFF",
-  furniture: [],
+  furniture: [
+    {
+      id: 0,
+      placement_id: "EEIF-EEEE-EEEE-EEE",
+      name: "Table For 2",
+      x: 100,
+      y: 100,
+      position: {
+        posX: 300,
+        posY: 100,
+      },
+    },
+  ],
 };
 
 const RoomProvider = ({ children }) => {
@@ -23,9 +38,40 @@ const RoomProvider = ({ children }) => {
   const [scale, setScale] = useState(1.0);
   const [selectedFurniture, setSelectedFurniture] = useState(null);
 
+  const windowWidth = useWindowWidth();
+  const [roomStyles, setRoomStyles] = useState({
+    backgroundColor: room.color,
+  });
+
   const roomBox = useRoomDomRect(scale, rotate);
   const { setAction } = useAction();
-  const [placeFurniture, moveFurniture] = usePlaceAndMove(scale, rotate);
+
+  const [placeFurniture] = usePlaceAndMove(roomBox, room);
+
+  useEffect(() => {
+    const ratio = room.length / room.width;
+
+    setRoomStyles((roomStyles) => ({
+      ...roomStyles,
+      width: `${Math.round(windowWidth * 0.5)}px`,
+      height: `${Math.round(windowWidth * 0.5 * ratio)}px`,
+      transform: `rotateZ(${rotate}deg) scale(${scale})`,
+    }));
+
+    setRoom((room) => ({
+      ...room,
+      computedWidth: Math.round(windowWidth * 0.5),
+      computedHeight: Math.round(windowWidth * 0.5 * ratio),
+    }));
+  }, [
+    windowWidth,
+    rotate,
+    scale,
+    setRoomStyles,
+    room.length,
+    room.width,
+    setRoom,
+  ]);
 
   const [
     rotateRoomLeft,
@@ -38,44 +84,29 @@ const RoomProvider = ({ children }) => {
     () => ({
       accept: [ItemTypes.CARD, ItemTypes.FURNITURE],
       drop(item, monitor) {
-        const type = monitor.getItemType();
+        const furnitureItem = placeFurniture(item, monitor);
 
-        let itemWithPosition;
-
-        let actionMessage;
-
-        if (type === "furniture") {
-          itemWithPosition = moveFurniture(item, monitor);
-
-          actionMessage = {
-            title: "Furniture moved",
-            message: `${itemWithPosition.name} was moved.`,
-          };
-
-          const updatedFurniture = room.furniture.map((furniture_item) => {
-            if (furniture_item.placement_id === itemWithPosition.placement_id) {
-              return itemWithPosition;
+        if (monitor.getItemType() === "card") {
+          setRoom((room) => ({
+            ...room,
+            furniture: [...room.furniture, furnitureItem],
+          }));
+        } else {
+          const newFurniture = room.furniture.map((furniture_item) => {
+            if (furniture_item.placement_id === furnitureItem.placement_id) {
+              return furnitureItem;
             } else {
               return furniture_item;
             }
           });
 
-          setRoom({ ...room, furniture: updatedFurniture });
-        } else {
-          itemWithPosition = placeFurniture(item, monitor);
-
-          setRoom({
+          setRoom((room) => ({
             ...room,
-            furniture: [...room.furniture, itemWithPosition],
-          });
-
-          actionMessage = {
-            title: "Furniture added",
-            message: `${itemWithPosition.name} was added to ${room.name}`,
-          };
+            furniture: newFurniture,
+          }));
         }
 
-        setAction(actionMessage);
+        setAction({});
       },
     }),
     [room, roomBox, rotate]
@@ -95,6 +126,7 @@ const RoomProvider = ({ children }) => {
         selectedFurniture,
         setSelectedFurniture,
         drop,
+        roomStyles,
       }}
     >
       {children}

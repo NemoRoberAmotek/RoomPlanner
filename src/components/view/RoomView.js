@@ -8,7 +8,7 @@ import { useGlobalSettings } from "../../contexts/GlobalSettingsProvider";
 import "../../styles/room-view.css";
 
 const RoomView = () => {
-  const { room, scale, rotate, zoomRoomIn, zoomRoomOut, drop } = useRoom();
+  const { room, zoomRoomIn, zoomRoomOut, drop, roomStyles } = useRoom();
   const { units } = useGlobalSettings();
   const convertUnits = useConvertUnits(units);
 
@@ -22,13 +22,6 @@ const RoomView = () => {
       }
     });
   }, [zoomRoomIn, zoomRoomOut]);
-
-  const roomStyles = {
-    width: room.width * scale,
-    height: room.length * scale,
-    backgroundColor: room.color,
-    transform: `translate(-50%, -50%) rotate(${rotate}deg)`,
-  };
 
   return (
     <div className="room-view">

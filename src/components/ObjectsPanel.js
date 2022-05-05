@@ -17,8 +17,8 @@ const categories = [
       {
         id: 0,
         name: "Table For 2",
-        x: 90,
-        y: 90,
+        x: 100,
+        y: 100,
       },
       {
         id: 1,

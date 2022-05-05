@@ -3,11 +3,17 @@ import { useRoom } from "../../contexts/RoomProvider";
 import { useState, useEffect } from "react";
 import { getEmptyImage } from "react-dnd-html5-backend";
 import { useDrag } from "react-dnd";
+import useComputeItemSizeAndPosition from "../../hooks/useComputeItemSizeAndPosition";
 import { ItemTypes } from "../../Constants";
 
 const FurnitureItem = ({ furniture }) => {
-  const { scale, setSelectedFurniture } = useRoom();
+  const { setSelectedFurniture } = useRoom();
   const [selected, setSelected] = useState(false);
+  const { room } = useRoom();
+
+  const { dataToComputed } = useComputeItemSizeAndPosition(room);
+
+  const { width, height, posX, posY } = dataToComputed(furniture);
 
   useEffect(() => {
     setSelectedFurniture(furniture);
@@ -40,11 +46,10 @@ const FurnitureItem = ({ furniture }) => {
   return (
     <div
       style={{
-        width: furniture.x * scale,
-        height: furniture.y * scale,
-        transform: `translate(${furniture.position.posX * scale}px, ${
-          furniture.position.posY * scale
-        }px)`,
+        width: width,
+        height: height,
+        top: posY,
+        left: posX,
         opacity: isDragging ? 0.3 : 1,
       }}
       id={`furniture-in-view-${furniture.placement_id}`}
