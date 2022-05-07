@@ -81,7 +81,7 @@ const useComputation = (room, rotate) => {
         originalX < existing.position.posX + existing.width + 5 &&
         originalX > existing.position.posX + existing.width - 5
       ) {
-        const diff = originalX - (existing.position.posX + existing.x);
+        const diff = originalX - (existing.position.posX + existing.width);
         newPosX = originalX - diff;
       }
       if (

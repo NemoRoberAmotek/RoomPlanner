@@ -17,18 +17,21 @@ const categories = [
       {
         id: 0,
         name: "Table For 2",
+        color: "#4F95FF",
         width: 100,
         length: 100,
       },
       {
         id: 1,
         name: "Table For 4",
+        color: "#4F95FF",
         width: 180,
         length: 90,
       },
       {
         id: 2,
         name: "Table For 6",
+        color: "#4F95FF",
         width: 360,
         length: 90,
       },
@@ -42,18 +45,21 @@ const categories = [
       {
         id: 3,
         name: "Chair 1",
+        color: "#4F95FF",
         width: 90,
         length: 90,
       },
       {
         id: 4,
         name: "Chair 2",
+        color: "#4F95FF",
         width: 180,
         length: 90,
       },
       {
         id: 5,
         name: "Chair 3",
+        color: "#4F95FF",
         width: 360,
         length: 90,
       },

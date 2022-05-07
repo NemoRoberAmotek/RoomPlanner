@@ -13,6 +13,7 @@ const FurnitureItemPreview = ({ furniture }) => {
         width: width,
         height: height,
         transform: `rotate(${furniture.rotate}deg)`,
+        backgroundColor: furniture.color,
       }}
       id={`furniture-in-view-${furniture.placement_id}`}
       className={`furniture-in-view selected`}

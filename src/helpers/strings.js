@@ -7,3 +7,19 @@ export function capitalizeString(string) {
 
   return capArr.join(" ");
 }
+
+export function tryToInteger(string) {
+  const parsed = parseInt(string);
+  if (isNaN(parsed)) {
+    return string;
+  }
+  return parsed;
+}
+
+export function tryToFloat(string) {
+  const parsed = parseFloat(string);
+  if (isNaN(parsed)) {
+    return string;
+  }
+  return parsed;
+}

@@ -129,3 +129,23 @@
   cursor: move;
   border-radius: 0.25rem;
 }
+
+.range-input-wrap {
+  display: flex;
+  align-items: center;
+  grid-gap: 0.5rem;
+}
+
+.input-warning {
+  display: flex;
+  align-items: center;
+  grid-gap: 0.5rem;
+  padding: 1rem;
+  background-color: rgba(244, 127, 54, 25%);
+  color: #f47f36;
+  font-weight: bold;
+  border: 1px solid #f47f36;
+  border-radius: 0.25rem;
+  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
+}

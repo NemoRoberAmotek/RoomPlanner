@@ -1,8 +1,10 @@
+import { useRoom } from "../contexts/RoomProvider";
 import SidebarHeader from "./SidebarHeader";
 import SidebarFooter from "./SidebarFooter";
 import ActionAlert from "./ActionAlert";
 import IconLink from "./IconLink";
-import Properties from "./propertiespanel/Properties";
+import RoomProperties from "./propertiespanel/RoomProperties";
+import FurnitureProperties from "./propertiespanel/FurnitureProperties";
 
 function panelMenu() {
   return (
@@ -23,11 +25,13 @@ function panelMenu() {
 }
 
 const PropertiesPanel = () => {
+  const { selectedFurniture } = useRoom();
+
   return (
     <div className="sidebar">
       <SidebarHeader render={panelMenu} />
       <div className="sidebar-content">
-        <Properties />
+        {selectedFurniture ? <FurnitureProperties /> : <RoomProperties />}
       </div>
       <SidebarFooter render={() => <ActionAlert />} />
     </div>

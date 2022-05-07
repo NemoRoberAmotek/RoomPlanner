@@ -10,7 +10,7 @@ import useWindowWidth from "../hooks/useWindowWidth";
 import { useDrop } from "react-dnd";
 import { ItemTypes } from "../Constants";
 import useRoomDomRect from "../hooks/useRoomDomRect";
-import useRotateAndZoom from "../hooks/useRotateAndZoom";
+import useRoomTransform from "../hooks/useRoomTransform";
 import useComputation from "../hooks/useComputation";
 import { useAction } from "./ActionProvider";
 import { v4 as uuidv4 } from "uuid";
@@ -31,6 +31,7 @@ const roomDummy = {
       name: "Table For 2",
       width: 100,
       length: 200,
+      color: "#4F95FF",
       position: {
         posX: 300,
         posY: 0,
@@ -42,6 +43,7 @@ const roomDummy = {
 
 const RoomProvider = ({ children }) => {
   const [room, setRoom] = useState(roomDummy);
+  const [translate, setTranslate] = useState({ x: 0, y: 0 });
   const [rotate, setRotate] = useState(0);
   const [scale, setScale] = useState(1.0);
   const [selectedFurniture, setSelectedFurniture] = useState(null);
@@ -49,7 +51,7 @@ const RoomProvider = ({ children }) => {
     backgroundColor: room.color,
   });
 
-  const windowWidth = useWindowWidth();
+  const windowSize = useWindowWidth();
   const roomBox = useRoomDomRect(scale, rotate);
   const { setAction } = useAction();
   const { adjustToRotation, snapToRoom, snapToOthers } = useComputation(
@@ -61,7 +63,18 @@ const RoomProvider = ({ children }) => {
     rotateRoomRight,
     zoomRoomIn,
     zoomRoomOut,
-  ] = useRotateAndZoom(scale, rotate, setScale, setRotate);
+    translateX,
+    translateY,
+    clearTranslate,
+    clearAll,
+  ] = useRoomTransform(
+    scale,
+    rotate,
+    setScale,
+    setRotate,
+    translate,
+    setTranslate
+  );
 
   const updateRoomFurniture = useCallback(
     (item) => {
@@ -78,14 +91,14 @@ const RoomProvider = ({ children }) => {
     [setRoom, room]
   );
 
-  const removeFuniture = useCallback(
+  const removeFurniture = useCallback(
     (item) => {
       const newFurniture = room.furniture.filter(
         (existing) => existing.placement_id !== item.placement_id
       );
 
-      setRoom({ ...room, furniture: newFurniture });
       setSelectedFurniture(null);
+      setRoom({ ...room, furniture: newFurniture });
     },
     [room]
   );
@@ -111,15 +124,23 @@ const RoomProvider = ({ children }) => {
   }, [selectedFurniture, snapToRoom, updateRoomFurniture]);
 
   useEffect(() => {
-    const ratio = room.length / room.width;
-    const roomWidth = Math.round(windowWidth * 0.5);
-    const roomHeight = Math.round(windowWidth * 0.5 * ratio);
+    let ratio, roomWidth, roomHeight;
+    if (room.width > room.length) {
+      ratio = room.length / room.width;
+      roomWidth = Math.round(windowSize.width * 0.5);
+      roomHeight = Math.round(windowSize.width * 0.5 * ratio);
+    } else {
+      ratio = room.width / room.length;
+      roomWidth = Math.round(windowSize.height * 0.75 * ratio);
+      roomHeight = Math.round(windowSize.height * 0.75);
+    }
 
     setRoomStyles((roomStyles) => ({
       ...roomStyles,
       width: `${roomWidth}px`,
       height: `${roomHeight}px`,
-      transform: `rotateZ(${rotate}deg) scale(${scale})`,
+      transform: `rotateZ(${rotate}deg) scale(${scale}) translate(${translate.x}px, ${translate.y}px)`,
+      backgroundColor: room.color,
     }));
 
     setRoom((room) => ({
@@ -128,12 +149,14 @@ const RoomProvider = ({ children }) => {
       computedHeight: roomHeight,
     }));
   }, [
-    windowWidth,
+    translate,
+    windowSize,
     rotate,
     scale,
     setRoomStyles,
     room.length,
     room.width,
+    room.color,
     setRoom,
   ]);
 
@@ -187,6 +210,7 @@ const RoomProvider = ({ children }) => {
       };
 
       updateRoomFurniture(movedItem);
+      setSelectedFurniture(movedItem);
       if (!error) {
         setAction({
           title: `${item.name} moved`,
@@ -316,6 +340,10 @@ const RoomProvider = ({ children }) => {
         rotateRoomRight,
         zoomRoomIn,
         zoomRoomOut,
+        translateX,
+        translateY,
+        clearTranslate,
+        clearAll,
         rotate,
         scale,
         selectedFurniture,
@@ -325,7 +353,7 @@ const RoomProvider = ({ children }) => {
         rotateFurniture,
         updateRoomFurniture,
         updateAfterSelectedChange,
-        removeFuniture,
+        removeFurniture,
       }}
     >
       {children}

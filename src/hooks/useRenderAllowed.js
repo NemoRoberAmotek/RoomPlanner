@@ -4,15 +4,15 @@ import useWindowWidth from "./useWindowWidth";
 const useRenderAllowed = () => {
   const [renderAllowed, setRenderAllowed] = useState(false);
 
-  const windowWidth = useWindowWidth();
+  const { width } = useWindowWidth();
 
   useEffect(() => {
-    if (windowWidth < 1240) {
+    if (width < 1240) {
       setRenderAllowed(false);
     } else {
       setRenderAllowed(true);
     }
-  }, [windowWidth]);
+  }, [width]);
 
   return renderAllowed;
 };

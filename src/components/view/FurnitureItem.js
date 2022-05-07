@@ -5,6 +5,7 @@ import { getEmptyImage } from "react-dnd-html5-backend";
 import { useDrag } from "react-dnd";
 import useComputation from "../../hooks/useComputation";
 import { ItemTypes } from "../../Constants";
+import { Icon } from "@iconify/react";
 
 const FurnitureItem = ({ furniture }) => {
   const [selected, setSelected] = useState(false);
@@ -16,6 +17,7 @@ const FurnitureItem = ({ furniture }) => {
     rotateFurniture,
     selectedFurniture,
     setSelectedFurniture,
+    removeFurniture,
   } = useRoom();
 
   const { dataToComputed } = useComputation(room, rotate);
@@ -32,6 +34,16 @@ const FurnitureItem = ({ furniture }) => {
     }),
     [furniture]
   );
+
+  const onClick = (e) => {
+    if (
+      !e.target.classList.contains("furniture-control-btn") &&
+      !e.target.closest(".furniture-control-btn")
+    ) {
+      setSelectedFurniture(furniture);
+      console.log("Click");
+    }
+  };
 
   useEffect(() => {
     if (!selectedFurniture) return setSelected(false);
@@ -51,7 +63,10 @@ const FurnitureItem = ({ furniture }) => {
     document
       .getElementById(furniture.placement_id)
       .addEventListener("transitionstart", (e) => {
-        if (e.propertyName !== "background-color") {
+        if (
+          e.propertyName !== "background-color" &&
+          e.propertyName !== "box-shadow"
+        ) {
           setShowControls(false);
         }
       });
@@ -69,21 +84,53 @@ const FurnitureItem = ({ furniture }) => {
         left: posX,
         opacity: isDragging ? 0.3 : 1,
         transform: `rotate(${furniture.rotate}deg)`,
+        backgroundColor: furniture.color,
+        "--color-box-shadow": `${furniture.color}80`,
       }}
       id={`${furniture.placement_id}`}
       ref={selected ? drag : null}
       className={`furniture-in-view ${selected && "selected"}`}
-      onClick={() => setSelectedFurniture(furniture)}
-      onKeyPress={() => setSelectedFurniture(furniture)}
+      onClick={onClick}
+      onKeyPress={onClick}
       role="button"
       tabIndex="0"
     >
-      {showControls && <small>{furniture.name}</small>}
-      {selected && showControls && furniture.length !== furniture.width && (
-        <button className="" onClick={() => rotateFurniture(furniture)}>
-          Rotate
-        </button>
-      )}
+      <div className="furniture-inner">
+        {showControls && <small>{furniture.name}</small>}
+        {showControls && selected && (
+          <div
+            className={`furniture-item-controls ${
+              furniture.length !== furniture.width && "justify-between"
+            }`}
+          >
+            {selected && showControls && furniture.length !== furniture.width && (
+              <button
+                className="button-icon primary furniture-control-btn"
+                onClick={() => rotateFurniture(furniture)}
+                style={{ borderColor: furniture.color, color: furniture.Color }}
+              >
+                <Icon
+                  icon="fa6-solid:arrow-rotate-right"
+                  color={furniture.color}
+                  height="16"
+                />
+              </button>
+            )}
+            {selected && showControls && (
+              <button
+                className="button-icon danger furniture-control-btn"
+                onClick={() => removeFurniture(furniture)}
+              >
+                <Icon
+                  icon="ic:round-delete-forever"
+                  height="16"
+                  color="var(--color-danger)"
+                />
+              </button>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

@@ -6,7 +6,7 @@ import { useGlobalSettings } from "../../contexts/GlobalSettingsProvider";
 
 const FurnitureListItem = ({ furniture }) => {
   const { units } = useGlobalSettings();
-  const convertUnits = useConvertUnits(units);
+  const { convertUnitsToString } = useConvertUnits(units);
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ItemTypes.CARD,
@@ -24,7 +24,8 @@ const FurnitureListItem = ({ furniture }) => {
     >
       <small className="small-bold">{furniture.name}</small>
       <small className="color-default">
-        {convertUnits(furniture.width)} - {convertUnits(furniture.length)}
+        {convertUnitsToString(furniture.width)} -{" "}
+        {convertUnitsToString(furniture.length)}
       </small>
     </div>
   );

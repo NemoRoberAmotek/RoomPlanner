@@ -8,7 +8,6 @@
 .room {
   border: 1px solid black;
   transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease;
-  overflow: hidden;
 }
 
 .grid-row {
@@ -27,9 +26,56 @@
   padding: 1rem;
 }
 
+.controls button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.controls-group {
+  display: flex;
+  flex-direction: column;
+  grid-gap: 0.5rem;
+  padding: 0.5rem;
+  background-color: white;
+  border-radius: 0.25rem;
+  box-shadow: 0 5px 15px 0px rgba(0, 0, 0, 15%);
+}
+
+.controls-translate-buttons {
+  display: flex;
+  flex-direction: column;
+  grid-gap: 0.25rem;
+}
+
+.controls-translate-buttons button {
+  background-color: white;
+  border-color: transparent;
+  border-radius: 0.25rem;
+  box-shadow: 0 5px 15px 0px rgba(0, 0, 0, 15%);
+}
+
+.controls-button-group {
+  display: flex;
+  grid-gap: 0.125rem;
+}
+
+.controls-group > .controls-button-group {
+  grid-gap: 0.5rem;
+}
+
+.clear-all-transforms-button {
+  width: 100%;
+}
+
+.controls-translate-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  grid-gap: 0.25rem;
+}
+
 .furniture-in-view {
   position: absolute;
-  background-color: var(--color-default);
   cursor: pointer;
   color: white;
   top: 0;
@@ -38,9 +84,45 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
   border: 0px;
   transition: background-color 0.3s ease, transform 0.3s ease, width 0.3s ease,
-    height 0.3s ease;
+    height 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 0.25rem;
+}
+
+.furniture-in-view.selected {
+  box-shadow: 0px 0px 15px 5px var(--color-box-shadow);
+}
+
+.furniture-inner {
+  padding: 1rem;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.furniture-inner > small {
+  text-align: center;
+}
+
+.furniture-item-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0.5rem;
+  margin: 0 1rem;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 0.25rem;
+  flex-wrap: wrap;
+  grid-gap: 1rem;
+}
+
+.furniture-item-controls.justify-between {
+  justify-content: space-between;
 }
 
 .furniture-in-view.selected {
