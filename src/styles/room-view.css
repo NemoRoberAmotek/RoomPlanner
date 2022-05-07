@@ -5,6 +5,138 @@
   justify-content: center;
 }
 
+.ruler {
+  position: absolute;
+}
+
+.ruler-line-item__dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  position: absolute;
+  border-radius: 50%;
+  transition: top 0.3s ease, left 0.3s ease;
+}
+
+.ruler-x {
+  top: -3.25rem;
+}
+
+.ruler-line {
+  background-color: var(--color-black);
+  position: relative;
+}
+
+.ruler-x .ruler-numbers {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.ruler-x .ruler-line {
+  width: 100%;
+  height: 1px;
+}
+
+.ruler-x .ruler-line-item__dot {
+  top: -0.25rem;
+  transform: translateX(-50%);
+}
+
+.ruler-x .ruler-line-item__between {
+  height: 3px;
+  position: absolute;
+  top: -1px;
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ruler-x .ruler-line-item__between > small {
+  position: relative;
+  top: 0.75rem;
+  font-weight: bold;
+  pointer-events: none;
+}
+
+.ruler-y {
+  left: -3rem;
+  display: flex;
+}
+
+.ruler-y .ruler-line-item__between {
+  width: 3px;
+  position: absolute;
+  left: -1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+}
+
+.ruler-line-item__between {
+  transition: opacity 0.3s ease, top 0.3s ease, left 0.3s ease, width 0.3s ease,
+    height 0.3s ease;
+}
+
+.ruler-line-item {
+  cursor: pointer;
+  display: inline-block;
+}
+
+.ruler-line-item:focus,
+.ruler-line-item:focus-visible {
+  border-color: transparent;
+}
+
+.ruler-line-item.selected > *,
+.ruler-line-item:hover > * {
+  z-index: 10;
+}
+
+.ruler-line-item.selected > .ruler-line-item__between {
+  opacity: 1;
+}
+
+.ruler-line-item:hover > .ruler-line-item__between {
+  opacity: 1;
+}
+
+.ruler-line-item__between:hover {
+  opacity: 1;
+}
+
+.ruler-y .ruler-line-item__between > small {
+  position: relative;
+  left: 0.75rem;
+  font-weight: bold;
+  writing-mode: vertical-rl;
+  pointer-events: none;
+}
+
+.ruler-y .ruler-numbers {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-right: 0.25rem;
+}
+
+.ruler-y .ruler-numbers > small {
+  writing-mode: vertical-rl;
+}
+
+.ruler-y .ruler-line {
+  width: 1px;
+  height: 100%;
+}
+
+.ruler-y .ruler-line-item__dot {
+  left: -0.25rem;
+  transform: translateY(-50%);
+}
+
 .room {
   border: 1px solid black;
   transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease;
@@ -24,6 +156,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 1rem;
+  z-index: 11;
 }
 
 .controls button.disabled {

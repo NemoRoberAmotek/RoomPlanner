@@ -2,6 +2,7 @@ import { useRoom } from "../../contexts/RoomProvider";
 import FurnitureItem from "./FurnitureItem";
 import CustomDragLayer from "./CustomDragLayer";
 import Controls from "./Controls";
+import Rulers from "./Rulers";
 import { useEffect } from "react";
 import "../../styles/room-view.css";
 
@@ -26,10 +27,19 @@ const RoomView = () => {
     });
   }, [zoomRoomIn, zoomRoomOut]);
 
+  useEffect(() => {
+    window.addEventListener("keydown", (e) => {
+      if (e.code === "Escape") {
+        setSelectedFurniture(null);
+      }
+    });
+  }, [setSelectedFurniture]);
+
   const onRoomClick = (e) => {
     if (
       !e.target.classList.contains("furniture-in-view") &&
-      !e.target.closest(".furniture-in-view")
+      !e.target.closest(".furniture-in-view") &&
+      !e.target.closest(".ruler")
     ) {
       setSelectedFurniture(null);
     }
@@ -46,6 +56,7 @@ const RoomView = () => {
         role="menu"
         tabIndex="0"
       >
+        <Rulers />
         <CustomDragLayer />
         {room.furniture.map((furniture, i) => (
           <FurnitureItem key={i} furniture={furniture} />

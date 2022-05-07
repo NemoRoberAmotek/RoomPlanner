@@ -15,7 +15,7 @@ const FurnitureProperties = () => {
   const [formWarning, setFormWarning] = useState();
 
   const { units } = useGlobalSettings();
-  const { convertUnits } = useConvertUnits(units);
+  const { convertUnits, getUnitName } = useConvertUnits(units);
 
   const {
     selectedFurniture,
@@ -110,7 +110,7 @@ const FurnitureProperties = () => {
       </div>
       <div className="form-col">
         <div className="form-control">
-          <label htmlFor="width">Width (cm)</label>
+          <label htmlFor="width">Width ({getUnitName()})</label>
           <input
             type="number"
             id="width"
@@ -137,7 +137,7 @@ const FurnitureProperties = () => {
           />
         </div>
         <div className="form-control">
-          <label htmlFor="length">Length (cm)</label>
+          <label htmlFor="length">Length ({getUnitName()})</label>
           <input
             type="number"
             id="length"
@@ -173,7 +173,7 @@ const FurnitureProperties = () => {
 
       <div className="form-col">
         <div className="form-control">
-          <label htmlFor="posX">Position X (cm)</label>
+          <label htmlFor="posX">Position X ({getUnitName()})</label>
           {room.width - selectedFurniture.width <= 0 ? (
             <small>Only one position possible</small>
           ) : (
@@ -202,7 +202,7 @@ const FurnitureProperties = () => {
           )}
         </div>
         <div className="form-control">
-          <label htmlFor="posY">Position Y (cm)</label>
+          <label htmlFor="posY">Position Y ({getUnitName()})</label>
           {room.length - selectedFurniture.length <= 0 ? (
             <small>Only one position possible</small>
           ) : (

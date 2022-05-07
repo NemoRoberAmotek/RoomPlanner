@@ -14,7 +14,7 @@ const RoomProperties = () => {
   const [length, setLength] = useState(0);
 
   const { units } = useGlobalSettings();
-  const { convertUnits } = useConvertUnits(units);
+  const { convertUnits, getUnitName } = useConvertUnits(units);
 
   const { room, setRoom } = useRoom();
   const { setAction } = useAction();
@@ -26,7 +26,6 @@ const RoomProperties = () => {
 
   const onInputChange = useCallback(
     (e) => {
-      console.log("OnInput");
       let value = tryToInteger(e.target.value);
 
       if (units === "imperial") {
@@ -63,7 +62,7 @@ const RoomProperties = () => {
       </div>
       <div className="form-col">
         <div className="form-control">
-          <label htmlFor="width">Width (cm)</label>
+          <label htmlFor="width">Width ({getUnitName()})</label>
           <input
             type="number"
             id="width"
@@ -82,7 +81,7 @@ const RoomProperties = () => {
           />
         </div>
         <div className="form-control">
-          <label htmlFor="length">Length (cm)</label>
+          <label htmlFor="length">Length ({getUnitName()})</label>
           <input
             type="number"
             id="length"

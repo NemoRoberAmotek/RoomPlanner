@@ -41,7 +41,6 @@ const FurnitureItem = ({ furniture }) => {
       !e.target.closest(".furniture-control-btn")
     ) {
       setSelectedFurniture(furniture);
-      console.log("Click");
     }
   };
 

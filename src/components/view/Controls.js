@@ -1,5 +1,6 @@
 import { useRoom } from "../../contexts/RoomProvider";
 import { Icon } from "@iconify/react";
+import { useEffect } from "react";
 
 const Controls = () => {
   const {
@@ -9,11 +10,15 @@ const Controls = () => {
     rotateRoomRight,
     zoomRoomIn,
     zoomRoomOut,
-    translateX,
-    translateY,
+    runTranslate,
     clearTranslate,
     clearAll,
+    roomControlKeyEvents,
   } = useRoom();
+
+  useEffect(() => {
+    window.addEventListener("keydown", roomControlKeyEvents);
+  }, [roomControlKeyEvents]);
 
   return (
     <div className="controls">
@@ -28,6 +33,9 @@ const Controls = () => {
               color="var(--color-primary)"
               height="16"
             />
+            <div className="tooltip">
+              <small>A</small>
+            </div>
           </button>
           <button
             className={`button-icon primary ${rotate === 360 && "disabled"}`}
@@ -38,6 +46,9 @@ const Controls = () => {
               color="var(--color-primary)"
               height="16"
             />
+            <div className="tooltip">
+              <small>R</small>
+            </div>
           </button>
         </div>
         <div className="controls-button-group">
@@ -50,6 +61,9 @@ const Controls = () => {
               color="var(--color-primary)"
               height="16"
             />
+            <div className="tooltip">
+              <small>-</small>
+            </div>
           </button>
           <button className="button-icon primary" onClick={zoomRoomIn}>
             <Icon
@@ -57,6 +71,9 @@ const Controls = () => {
               color="var(--color-primary)"
               height="16"
             />
+            <div className="tooltip">
+              <small>+</small>
+            </div>
           </button>
         </div>
         <button
@@ -71,31 +88,36 @@ const Controls = () => {
         </button>
       </div>
 
-      <div
-        className="controls-translate-buttons"
-        style={{
-          transform: `rotate(${
-            rotate !== 0 || rotate !== 360 ? rotate : 0
-          }deg)`,
-        }}
-      >
+      <div className="controls-translate-buttons">
         <div className="controls-translate-row">
-          <button className="button-icon up" onClick={() => translateY(100)}>
+          <button
+            className="button-icon up"
+            onClick={() => runTranslate(100, "up")}
+          >
             <Icon
               icon="fa6-solid:circle-arrow-up"
               color="var(--color-primary)"
               height="16"
             />
+            <div className="tooltip">
+              <small>Arrow Up</small>
+            </div>
           </button>
         </div>
 
         <div className="controls-translate-row">
-          <button className="button-icon" onClick={() => translateX(100)}>
+          <button
+            className="button-icon"
+            onClick={() => runTranslate(100, "left")}
+          >
             <Icon
               icon="fa6-solid:circle-arrow-left"
               color="var(--color-primary)"
               height="16"
             />
+            <div className="tooltip">
+              <small>Arrow Left</small>
+            </div>
           </button>
           <button
             className="button-icon clear-translate-btn"
@@ -106,23 +128,38 @@ const Controls = () => {
               color="var(--color-primary)"
               height="16"
             />
+            <div className="tooltip">
+              <small>C</small>
+            </div>
           </button>
-          <button className="button-icon" onClick={() => translateX(-100)}>
+          <button
+            className="button-icon"
+            onClick={() => runTranslate(100, "right")}
+          >
             <Icon
               icon="fa6-solid:circle-arrow-right"
               color="var(--color-primary)"
               height="16"
             />
+            <div className="tooltip">
+              <small>Arrow Right</small>
+            </div>
           </button>
         </div>
 
         <div className="controls-translate-row">
-          <button className="button-icon" onClick={() => translateY(-100)}>
+          <button
+            className="button-icon"
+            onClick={() => runTranslate(100, "down")}
+          >
             <Icon
               icon="fa6-solid:circle-arrow-down"
               color="var(--color-primary)"
               height="16"
             />
+            <div className="tooltip">
+              <small>Arrow Down</small>
+            </div>
           </button>
         </div>
       </div>

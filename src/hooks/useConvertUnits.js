@@ -40,7 +40,15 @@ const useConvertUnits = (units) => {
     }
   };
 
-  return { convertUnitsToString, convertUnits };
+  const getUnitName = () => {
+    if (units === "metric") {
+      return "cm";
+    } else {
+      return "ft";
+    }
+  };
+
+  return { convertUnitsToString, convertUnits, getUnitName };
 };
 
 export default useConvertUnits;

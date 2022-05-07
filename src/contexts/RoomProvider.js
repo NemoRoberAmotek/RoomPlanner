@@ -63,10 +63,10 @@ const RoomProvider = ({ children }) => {
     rotateRoomRight,
     zoomRoomIn,
     zoomRoomOut,
-    translateX,
-    translateY,
     clearTranslate,
     clearAll,
+    roomControlKeyEvents,
+    runTranslate,
   ] = useRoomTransform(
     scale,
     rotate,
@@ -340,8 +340,6 @@ const RoomProvider = ({ children }) => {
         rotateRoomRight,
         zoomRoomIn,
         zoomRoomOut,
-        translateX,
-        translateY,
         clearTranslate,
         clearAll,
         rotate,
@@ -354,6 +352,8 @@ const RoomProvider = ({ children }) => {
         updateRoomFurniture,
         updateAfterSelectedChange,
         removeFurniture,
+        roomControlKeyEvents,
+        runTranslate,
       }}
     >
       {children}

@@ -18,7 +18,6 @@ const useRoomDomRect = (scale, rotate) => {
     const room = document.querySelector(".room");
 
     if (!room) return;
-    console.log("Running");
     let domRect;
 
     room.addEventListener("transitionend", () => {
