@@ -1,8 +1,9 @@
 import { useRoom } from "../contexts/RoomProvider";
 import useInput from "../hooks/useInput";
+import { tryToInteger } from "../helpers/strings";
 
 const AddRoomForm = () => {
-  const { setRoom } = useRoom();
+  const { setRoom, clearAll } = useRoom();
   const [nameProps, resetName] = useInput("");
   const [widthProps, resetWidth] = useInput(0);
   const [heightProps, resetHeight] = useInput(0);
@@ -12,12 +13,14 @@ const AddRoomForm = () => {
     e.preventDefault();
     const room = {
       name: nameProps.value,
-      width: widthProps.value,
-      height: heightProps.value,
-      color: colorProps.color,
+      width: tryToInteger(widthProps.value),
+      length: tryToInteger(heightProps.value),
+      color: colorProps.value,
+      furniture: [],
     };
 
     setRoom(room);
+    clearAll();
     resetName();
     resetWidth();
     resetHeight();

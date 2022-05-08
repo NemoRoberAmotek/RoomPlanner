@@ -10,9 +10,11 @@ import useComputation from "../../hooks/useComputation";
 import { useState, useEffect, useCallback } from "react";
 import { Icon } from "@iconify/react";
 import useConvertUnits from "../../hooks/useConvertUnits";
+import { v4 as uuidv4 } from "uuid";
 
 const FurnitureProperties = () => {
   const [formWarning, setFormWarning] = useState();
+  const [initialValues, setInitialValues] = useState({});
 
   const { units } = useGlobalSettings();
   const { convertUnits, getUnitName } = useConvertUnits(units);
@@ -21,9 +23,13 @@ const FurnitureProperties = () => {
     selectedFurniture,
     room,
     setSelectedFurniture,
+    rotateFurniture,
+    setFurnitureZIndex,
     updateRoomFurniture,
     removeFurniture,
+    duplicateFurniture,
   } = useRoom();
+
   const { setAction } = useAction();
   const { snapToRoom } = useComputation(room);
 
@@ -36,10 +42,23 @@ const FurnitureProperties = () => {
     setWidth(selectedFurniture.width);
   }, [selectedFurniture]);
 
+  const onInputFocus = useCallback((e) => {
+    const val = tryToInteger(e.target.value);
+    const key = e.target.getAttribute("id");
+
+    setInitialValues((initialValues) => ({ ...initialValues, [key]: val }));
+  }, []);
+
   const onInputChange = useCallback(
     (e) => {
       let value = tryToInteger(e.target.value);
       const key = e.target.getAttribute("id");
+
+      if (selectedFurniture[key] === value) return;
+
+      if (key === "posX" || key === "posY") {
+        if (selectedFurniture.position[key] === value) return;
+      }
 
       if (units === "imperial") {
         value = tryToFloat(e.target.value);
@@ -77,13 +96,30 @@ const FurnitureProperties = () => {
           posY: snappedPosY,
         },
       };
-      setSelectedFurniture(snappedItem);
-      updateRoomFurniture(snappedItem);
+
+      let initial = { ...snappedItem, [key]: initialValues[key] };
+
+      if (key === "posX" || key === "posY") {
+        initial = {
+          ...snappedItem,
+          position: {
+            ...snappedItem.position,
+            [key]: initialValues[key],
+          },
+        };
+      }
 
       setAction({
+        id: uuidv4(),
         title: `${selectedFurniture.name} ${capitalizeString(key)} updated.`,
         message: `${capitalizeString(key)} was changed to ${value}`,
+        type: "update",
+        initial,
+        new: snappedItem,
       });
+
+      setSelectedFurniture(snappedItem);
+      updateRoomFurniture(snappedItem);
     },
     [
       units,
@@ -93,12 +129,80 @@ const FurnitureProperties = () => {
       setSelectedFurniture,
       snapToRoom,
       updateRoomFurniture,
+      initialValues,
     ]
   );
 
   return (
     <div>
       <h4>{selectedFurniture.name}</h4>
+      <div className="properties-button-box">
+        <button
+          className="button-icon primary furniture-control-btn"
+          onClick={() => rotateFurniture(selectedFurniture)}
+        >
+          <Icon
+            icon="fa6-solid:arrow-rotate-right"
+            color="var(--color-primary)"
+            height="16"
+          />
+          <div className="tooltip">
+            <small>Rotate</small>
+          </div>
+        </button>
+        <button
+          className="button-icon primary furniture-control-btn"
+          onClick={() => setFurnitureZIndex(selectedFurniture, "front")}
+        >
+          <Icon
+            icon="fa6-solid:circle-arrow-up"
+            color="var(--color-primary"
+            height="16"
+          />
+          <div className="tooltip">
+            <small>To front</small>
+          </div>
+        </button>
+        <button
+          className="button-icon primary furniture-control-btn"
+          onClick={() => setFurnitureZIndex(selectedFurniture, "back")}
+        >
+          <Icon
+            icon="fa6-solid:circle-arrow-down"
+            color="var(--color-primary"
+            height="16"
+          />
+          <div className="tooltip">
+            <small>To back</small>
+          </div>
+        </button>
+        <button
+          className="button-icon primary furniture-control-btn"
+          onClick={() => duplicateFurniture(selectedFurniture)}
+        >
+          <Icon
+            icon="heroicons-solid:document-duplicate"
+            color="var(--color-primary)"
+            height="16"
+          />
+          <div className="tooltip">
+            <small>Duplicate</small>
+          </div>
+        </button>
+        <button
+          className="button-icon danger furniture-control-btn"
+          onClick={() => removeFurniture(selectedFurniture)}
+        >
+          <Icon
+            icon="ic:round-delete-forever"
+            height="16"
+            color="var(--color-danger)"
+          />
+          <div className="tooltip">
+            <small>Delete</small>
+          </div>
+        </button>
+      </div>
       <div className="form-control">
         <label htmlFor="name">Name</label>
         <input
@@ -106,6 +210,7 @@ const FurnitureProperties = () => {
           type="text"
           value={selectedFurniture.name}
           onChange={onInputChange}
+          onFocus={onInputFocus}
         />
       </div>
       <div className="form-col">
@@ -132,6 +237,7 @@ const FurnitureProperties = () => {
                 onInputChange(e);
               }
             }}
+            onFocus={onInputFocus}
             min={0}
             step={units === "imperial" ? "0.01" : "1"}
           />
@@ -159,6 +265,7 @@ const FurnitureProperties = () => {
                 onInputChange(e);
               }
             }}
+            onFocus={onInputFocus}
             min={0}
             step={units === "imperial" ? 0.01 : 1}
           />
@@ -193,6 +300,7 @@ const FurnitureProperties = () => {
                   units
                 )}
                 onChange={onInputChange}
+                onFocus={onInputFocus}
                 step={units === "imperial" ? 0.01 : 1}
               />
               <small>
@@ -222,6 +330,7 @@ const FurnitureProperties = () => {
                   units
                 )}
                 onChange={onInputChange}
+                onFocus={onInputFocus}
                 step={units === "imperial" ? 0.01 : 1}
               />
               <small>
@@ -238,14 +347,9 @@ const FurnitureProperties = () => {
           id="color"
           value={selectedFurniture.color}
           onChange={onInputChange}
+          onFocus={onInputFocus}
         />
       </div>
-      <button
-        className="button-danger"
-        onClick={() => removeFurniture(selectedFurniture)}
-      >
-        Remove
-      </button>
     </div>
   );
 };

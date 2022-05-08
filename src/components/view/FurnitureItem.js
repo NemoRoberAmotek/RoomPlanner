@@ -18,6 +18,8 @@ const FurnitureItem = ({ furniture }) => {
     selectedFurniture,
     setSelectedFurniture,
     removeFurniture,
+    setFurnitureZIndex,
+    duplicateFurniture,
   } = useRoom();
 
   const { dataToComputed } = useComputation(room, rotate);
@@ -64,7 +66,8 @@ const FurnitureItem = ({ furniture }) => {
       .addEventListener("transitionstart", (e) => {
         if (
           e.propertyName !== "background-color" &&
-          e.propertyName !== "box-shadow"
+          e.propertyName !== "box-shadow" &&
+          e.propertyName !== "opacity"
         ) {
           setShowControls(false);
         }
@@ -81,10 +84,11 @@ const FurnitureItem = ({ furniture }) => {
         height: height,
         top: posY,
         left: posX,
-        opacity: isDragging ? 0.3 : 1,
+        opacity: isDragging && 0.3,
         transform: `rotate(${furniture.rotate}deg)`,
         backgroundColor: furniture.color,
         "--color-box-shadow": `${furniture.color}80`,
+        zIndex: selected ? 10 : furniture.zIndex,
       }}
       id={`${furniture.placement_id}`}
       ref={selected ? drag : null}
@@ -98,35 +102,105 @@ const FurnitureItem = ({ furniture }) => {
         {showControls && <small>{furniture.name}</small>}
         {showControls && selected && (
           <div
-            className={`furniture-item-controls ${
-              furniture.length !== furniture.width && "justify-between"
+            className={`furniture-item-controls__wrap ${
+              width < 140 && height < 218 && "hidden"
             }`}
           >
-            {selected && showControls && furniture.length !== furniture.width && (
-              <button
-                className="button-icon primary furniture-control-btn"
-                onClick={() => rotateFurniture(furniture)}
-                style={{ borderColor: furniture.color, color: furniture.Color }}
-              >
-                <Icon
-                  icon="fa6-solid:arrow-rotate-right"
-                  color={furniture.color}
-                  height="16"
-                />
-              </button>
-            )}
-            {selected && showControls && (
-              <button
-                className="button-icon danger furniture-control-btn"
-                onClick={() => removeFurniture(furniture)}
-              >
-                <Icon
-                  icon="ic:round-delete-forever"
-                  height="16"
-                  color="var(--color-danger)"
-                />
-              </button>
-            )}
+            <div
+              className={`furniture-item-controls ${width < 140 && "column"}`}
+            >
+              <>
+                <div
+                  className={`furniture-item-controls-group ${
+                    width < 140 && "column"
+                  }`}
+                >
+                  {furniture.length !== furniture.width && (
+                    <button
+                      className="button-icon primary furniture-control-btn"
+                      onClick={() => rotateFurniture(furniture)}
+                      style={{
+                        borderColor: furniture.color,
+                        color: furniture.color,
+                      }}
+                    >
+                      <Icon
+                        icon="fa6-solid:arrow-rotate-right"
+                        color={furniture.color}
+                        height="16"
+                      />
+                      <div className="tooltip">
+                        <small>Rotate</small>
+                      </div>
+                    </button>
+                  )}
+                  <button
+                    className="button-icon furniture-control-btn"
+                    onClick={() => setFurnitureZIndex(furniture, "front")}
+                    style={{
+                      borderColor: furniture.color,
+                      color: furniture.Color,
+                    }}
+                  >
+                    <Icon
+                      icon="fa6-solid:circle-arrow-up"
+                      color={furniture.color}
+                      height="16"
+                    />
+                    <div className="tooltip">
+                      <small>To front</small>
+                    </div>
+                  </button>
+                  <button
+                    className="button-icon furniture-control-btn"
+                    onClick={() => setFurnitureZIndex(furniture, "back")}
+                    style={{
+                      borderColor: furniture.color,
+                      color: furniture.Color,
+                    }}
+                  >
+                    <Icon
+                      icon="fa6-solid:circle-arrow-down"
+                      color={furniture.color}
+                      height="16"
+                    />
+                    <div className="tooltip">
+                      <small>To back</small>
+                    </div>
+                  </button>
+                  <button
+                    className="button-icon furniture-control-btn"
+                    onClick={() => duplicateFurniture(furniture)}
+                    style={{
+                      borderColor: furniture.color,
+                      color: furniture.Color,
+                    }}
+                  >
+                    <Icon
+                      icon="heroicons-solid:document-duplicate"
+                      color={furniture.color}
+                      height="16"
+                    />
+                    <div className="tooltip">
+                      <small>Duplicate</small>
+                    </div>
+                  </button>
+                </div>
+                <button
+                  className="button-icon danger furniture-control-btn"
+                  onClick={() => removeFurniture(furniture)}
+                >
+                  <Icon
+                    icon="ic:round-delete-forever"
+                    height="16"
+                    color="var(--color-danger)"
+                  />
+                  <div className="tooltip">
+                    <small>Delete</small>
+                  </div>
+                </button>
+              </>
+            </div>
           </div>
         )}
       </div>

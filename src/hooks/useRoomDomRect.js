@@ -5,6 +5,9 @@ const useRoomDomRect = (scale, rotate) => {
 
   useEffect(() => {
     const room = document.querySelector(".room");
+
+    if (!room) return;
+
     const domRect = room.getBoundingClientRect();
     setRoomBox({
       x: domRect.x,

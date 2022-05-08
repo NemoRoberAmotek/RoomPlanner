@@ -1,4 +1,5 @@
 import { useRoom } from "../contexts/RoomProvider";
+import { useAction } from "../contexts/ActionProvider";
 import SidebarHeader from "./SidebarHeader";
 import SidebarFooter from "./SidebarFooter";
 import ActionAlert from "./ActionAlert";
@@ -26,11 +27,15 @@ function panelMenu() {
 
 const PropertiesPanel = () => {
   const { selectedFurniture } = useRoom();
+  const { undo } = useAction();
 
   return (
     <div className="sidebar">
       <SidebarHeader render={panelMenu} />
       <div className="sidebar-content">
+        <button className="button-primary" onClick={undo}>
+          Undo
+        </button>
         {selectedFurniture ? <FurnitureProperties /> : <RoomProperties />}
       </div>
       <SidebarFooter render={() => <ActionAlert />} />

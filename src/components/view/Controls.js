@@ -17,7 +17,11 @@ const Controls = () => {
   } = useRoom();
 
   useEffect(() => {
-    window.addEventListener("keydown", roomControlKeyEvents);
+    window.addEventListener("keydown", (e) => {
+      if (e.target.nodeName !== "INPUT") {
+        roomControlKeyEvents(e);
+      }
+    });
   }, [roomControlKeyEvents]);
 
   return (

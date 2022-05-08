@@ -18,27 +18,11 @@ import { v4 as uuidv4 } from "uuid";
 const RoomContext = createContext();
 
 const roomDummy = {
-  name: "My Living Room",
+  name: "My First Room",
   width: 400,
   length: 200,
-  computedWidth: 400,
-  computedHeight: 200,
   color: "#FFFFFF",
-  furniture: [
-    {
-      id: 0,
-      placement_id: "EEIF-EEEE-EEEE-EEE",
-      name: "Table For 2",
-      width: 100,
-      length: 200,
-      color: "#4F95FF",
-      position: {
-        posX: 300,
-        posY: 0,
-      },
-      rotate: false,
-    },
-  ],
+  furniture: [],
 };
 
 const RoomProvider = ({ children }) => {
@@ -47,13 +31,11 @@ const RoomProvider = ({ children }) => {
   const [rotate, setRotate] = useState(0);
   const [scale, setScale] = useState(1.0);
   const [selectedFurniture, setSelectedFurniture] = useState(null);
-  const [roomStyles, setRoomStyles] = useState({
-    backgroundColor: room.color,
-  });
+  const [roomStyles, setRoomStyles] = useState(null);
 
   const windowSize = useWindowWidth();
   const roomBox = useRoomDomRect(scale, rotate);
-  const { setAction } = useAction();
+  const { setAction, actionToUndo, setActionToUndo } = useAction();
   const { adjustToRotation, snapToRoom, snapToOthers } = useComputation(
     room,
     rotate
@@ -92,72 +74,98 @@ const RoomProvider = ({ children }) => {
   );
 
   const removeFurniture = useCallback(
-    (item) => {
+    (item, action = true) => {
       const newFurniture = room.furniture.filter(
         (existing) => existing.placement_id !== item.placement_id
       );
 
       setSelectedFurniture(null);
       setRoom({ ...room, furniture: newFurniture });
+
+      if (action) {
+        setAction({
+          id: uuidv4(),
+          title: `${item.name} was deleted`,
+          message: `${item.name} was deleted from room ${room.name}`,
+          type: "delete",
+          initial: item,
+          new: null,
+        });
+      }
     },
-    [room]
+    [room, setAction]
   );
 
-  const updateAfterSelectedChange = useCallback(() => {
-    if (!selectedFurniture) return;
-    const [snappedPosX, snappedPosY] = snapToRoom(
-      selectedFurniture,
-      selectedFurniture.position.posX,
-      selectedFurniture.position.posY
-    );
-
-    const updatedItem = {
-      ...selectedFurniture,
-      position: {
-        posX: snappedPosX,
-        posY: snappedPosY,
-      },
-    };
-
-    updateRoomFurniture(updatedItem);
-    setSelectedFurniture(updatedItem);
-  }, [selectedFurniture, snapToRoom, updateRoomFurniture]);
-
   useEffect(() => {
-    let ratio, roomWidth, roomHeight;
-    if (room.width > room.length) {
-      ratio = room.length / room.width;
-      roomWidth = Math.round(windowSize.width * 0.5);
-      roomHeight = Math.round(windowSize.width * 0.5 * ratio);
-    } else {
-      ratio = room.width / room.length;
-      roomWidth = Math.round(windowSize.height * 0.75 * ratio);
-      roomHeight = Math.round(windowSize.height * 0.75);
-    }
+    setRoom((room) => {
+      if (!room) return;
 
-    setRoomStyles((roomStyles) => ({
-      ...roomStyles,
-      width: `${roomWidth}px`,
-      height: `${roomHeight}px`,
-      transform: `rotateZ(${rotate}deg) scale(${scale}) translate(${translate.x}px, ${translate.y}px)`,
-      backgroundColor: room.color,
-    }));
+      let ratio, roomWidth, roomHeight;
 
-    setRoom((room) => ({
-      ...room,
-      computedWidth: roomWidth,
-      computedHeight: roomHeight,
-    }));
+      if (room.width > room.length) {
+        ratio = room.length / room.width;
+        roomWidth = Math.round(windowSize.width * 0.5);
+        roomHeight = Math.round(windowSize.width * 0.5 * ratio);
+      } else {
+        ratio = room.width / room.length;
+        roomWidth = Math.round(windowSize.height * 0.75 * ratio);
+        roomHeight = Math.round(windowSize.height * 0.75);
+      }
+
+      setRoomStyles((roomStyles) => ({
+        ...roomStyles,
+        width: `${roomWidth}px`,
+        height: `${roomHeight}px`,
+        transform: `rotateZ(${rotate}deg) scale(${scale}) translate(${translate.x}px, ${translate.y}px)`,
+        backgroundColor: room.color,
+      }));
+
+      return {
+        ...room,
+        computedWidth: roomWidth,
+        computedHeight: roomHeight,
+      };
+    });
   }, [
     translate,
     windowSize,
     rotate,
     scale,
-    setRoomStyles,
     room.length,
     room.width,
-    room.color,
+    setRoomStyles,
     setRoom,
+  ]);
+
+  useEffect(() => {
+    if (!actionToUndo) return;
+
+    if (actionToUndo.type === "update") {
+      updateRoomFurniture(actionToUndo.initial);
+    }
+
+    if (actionToUndo.type === "place") {
+      removeFurniture(actionToUndo.new, false);
+    }
+
+    if (actionToUndo.type === "delete") {
+      setRoom((room) => ({
+        ...room,
+        furniture: [...room.furniture, actionToUndo.initial],
+      }));
+    }
+
+    setSelectedFurniture(actionToUndo.initial);
+
+    setActionToUndo(null);
+    setAction(null);
+  }, [
+    actionToUndo,
+    setActionToUndo,
+    updateRoomFurniture,
+    removeFurniture,
+    setSelectedFurniture,
+    setAction,
   ]);
 
   const moveFurniture = useCallback(
@@ -181,8 +189,18 @@ const RoomProvider = ({ children }) => {
         posY = 0;
         error = true;
         setAction({
+          id: uuidv4(),
           title: `Something went wrong`,
           message: `${item.name} could not be moved. The position was reset.`,
+          type: "update",
+          initial: item,
+          new: {
+            ...item,
+            position: {
+              posX,
+              posY,
+            },
+          },
         });
       }
 
@@ -213,8 +231,12 @@ const RoomProvider = ({ children }) => {
       setSelectedFurniture(movedItem);
       if (!error) {
         setAction({
+          id: uuidv4(),
           title: `${item.name} moved`,
           message: `${item.name} has moved in ${room.name}`,
+          type: "update",
+          initial: item,
+          new: movedItem,
         });
       }
     },
@@ -259,6 +281,7 @@ const RoomProvider = ({ children }) => {
           posX: snappedPosX,
           posY: snappedPosY,
         },
+        zIndex: 1,
         rotate: 0,
       };
 
@@ -268,8 +291,12 @@ const RoomProvider = ({ children }) => {
       }));
 
       setAction({
+        id: uuidv4(),
         title: `${item.name} added`,
         message: `${item.name} was added to ${room.name}`,
+        type: "place",
+        initial: null,
+        new: itemWithPosition,
       });
 
       setSelectedFurniture(itemWithPosition);
@@ -280,7 +307,7 @@ const RoomProvider = ({ children }) => {
   const rotateFurniture = useCallback(
     (item) => {
       const rotation = !item.rotate;
-
+      console.log(item);
       const newX = item.length,
         newY = item.width;
 
@@ -302,13 +329,99 @@ const RoomProvider = ({ children }) => {
       };
 
       updateRoomFurniture(rotatedItem);
+      setSelectedFurniture(rotatedItem);
 
       setAction({
+        id: uuidv4(),
         title: `${item.name} rotated`,
         message: `${item.name} has rotated in ${room.name}`,
+        type: "update",
+        initial: item,
+        new: rotatedItem,
       });
     },
     [room, updateRoomFurniture, snapToRoom, setAction]
+  );
+
+  const duplicateFurniture = useCallback(
+    (item) => {
+      let posX = 0,
+        posY = item.position.posY;
+
+      if (room.width - item.position.posX - item.width >= item.width) {
+        if (room.width > item.position.posX + item.width + item.width + 10) {
+          posX = item.position.posX + item.width + 10;
+        } else {
+          posX = item.position.posX + item.width;
+        }
+      } else if (room.width - item.width >= item.width) {
+        if (room.width > item.width + item.width + 10) {
+          posX = item.position.posX - item.width - 10;
+        } else {
+          posX = item.position.posX - item.width;
+        }
+      } else {
+        posX = 0;
+        posY = 0;
+      }
+
+      const [snappedPosX, snappedPosY] = snapToRoom(item, posX, posY);
+
+      const duplicatedItem = {
+        ...item,
+        placement_id: uuidv4(),
+        position: {
+          posX: snappedPosX,
+          posY: snappedPosY,
+        },
+      };
+
+      console.log(duplicatedItem);
+
+      setRoom({ ...room, furniture: [...room.furniture, duplicatedItem] });
+      setSelectedFurniture(duplicatedItem);
+
+      setAction({
+        id: uuidv4(),
+        title: `${item.name} was duplicated.`,
+        message: `${item.name} was duplicated in ${room.name}`,
+        type: "place",
+        initial: null,
+        new: duplicatedItem,
+      });
+    },
+    [room, snapToRoom, setAction]
+  );
+
+  const setFurnitureZIndex = useCallback(
+    (item, dir) => {
+      const current = item;
+      const highestZIndex = room.furniture.reduce((max, item) => {
+        if (item.zIndex > max && item.placement_id !== current.placement_id) {
+          return item.zIndex;
+        } else {
+          return max;
+        }
+      }, 0);
+
+      const updatedItem = {
+        ...item,
+        zIndex: dir === "front" ? highestZIndex + 1 : highestZIndex - 1,
+      };
+
+      updateRoomFurniture(updatedItem);
+      setSelectedFurniture(null);
+
+      setAction({
+        id: uuidv4(),
+        title: `${item.name} to ${dir}`,
+        message: `${item.name} was brought to ${dir} in ${room.name}`,
+        type: `update`,
+        initial: item,
+        new: updatedItem,
+      });
+    },
+    [updateRoomFurniture, room, setAction]
   );
 
   const [, drop] = useDrop(
@@ -350,10 +463,13 @@ const RoomProvider = ({ children }) => {
         roomStyles,
         rotateFurniture,
         updateRoomFurniture,
-        updateAfterSelectedChange,
         removeFurniture,
         roomControlKeyEvents,
         runTranslate,
+        setFurnitureZIndex,
+        moveFurniture,
+        duplicateFurniture,
+        setScale,
       }}
     >
       {children}

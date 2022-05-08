@@ -149,3 +149,9 @@
   margin-bottom: 0.5rem;
   margin-top: 0.5rem;
 }
+
+.properties-button-box {
+  display: flex;
+  align-items: center;
+  grid-gap: 0.5rem;
+}
