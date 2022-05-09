@@ -4,26 +4,25 @@ import PropertiesPanel from "../components/PropertiesPanel";
 import AddRoomForm from "../components/AddRoomForm.js";
 import RoomView from "../components/view/RoomView";
 import { useRoom } from "../contexts/RoomProvider";
-import { useAction } from "../contexts/ActionProvider";
+// import { useAction } from "../contexts/ActionProvider";
 import { useEffect } from "react";
+import useEventListeners from "../hooks/useEventListeners";
 
 const Main = () => {
-  const { undo } = useAction();
+  // const { undo } = useAction();
   const { room } = useRoom();
+  const [setWindowKeyEvents, setRoomViewEvents] = useEventListeners();
 
   useEffect(() => {
-    window.addEventListener("keypress", (e) => {
-      console.log(e);
-      console.log(undo);
-    });
-  }, [undo]);
+    setWindowKeyEvents();
+    setRoomViewEvents();
+  }, [setWindowKeyEvents, setRoomViewEvents]);
 
+  //TO BE REPLACED
   // useEffect(() => {
-  //   window.addEventListener("keydown", (e) => {
-  //     console.log(e);
+  //   window.addEventListener("keypress", (e) => {
   //     if (e.target.nodeName !== "INPUT") {
-  //       if (e.key === "z" && e.ctrlKey) {
-  //         console.log("Undoing");
+  //       if (e.key === "\x1A" && e.ctrlKey) {
   //         undo();
   //       }
   //     }

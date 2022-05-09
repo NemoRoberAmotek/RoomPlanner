@@ -11,19 +11,43 @@ const ActionContext = createContext();
 
 const ActionProvider = ({ children }) => {
   const [action, setAction] = useState(null);
-  const [actionList, setActionList] = useState([]);
+  const [, setActionList] = useState([]);
   const [actionToUndo, setActionToUndo] = useState(null);
+  const [, setActionsUndone] = useState([]);
+  const [actionToRedo, setActionToRedo] = useState(null);
+  const [message, setMessage] = useState(null);
 
   const undo = useCallback(() => {
-    const lastAction = actionList[actionList.length - 1];
-    if (!lastAction) return;
+    setActionList((actionList) => {
+      const lastAction = actionList[actionList.length - 1];
+      if (!lastAction) {
+        setMessage({
+          title: "There's nothing to undo.",
+          content: "There are no actions that can be undone at this moment",
+        });
+        return actionList;
+      }
+      setActionToUndo(lastAction);
+      setActionsUndone((actionsUndone) => [...actionsUndone, lastAction]);
+      return actionList.filter((action) => action.id !== lastAction.id);
+    });
+  }, [setActionList, setMessage]);
 
-    setActionToUndo(lastAction);
-    setActionList((actionList) =>
-      actionList.filter((action) => action.id !== lastAction.id)
-    );
-    /* TO DO: set message when actionlist is empty "Nothing to undo!"*/
-  }, [actionList]);
+  const redo = useCallback(() => {
+    setActionsUndone((actionsUndone) => {
+      const lastAction = actionsUndone[actionsUndone.length - 1];
+      if (!lastAction) {
+        setMessage({
+          title: "There's nothing to redo.",
+          content: "There are no actions that can be redone at this moment",
+        });
+        return actionsUndone;
+      }
+      setActionToRedo(lastAction);
+      setActionList((actionList) => [...actionList, lastAction]);
+      return actionsUndone.filter((action) => action.id !== lastAction.id);
+    });
+  }, []);
 
   function isEqual(obj1, obj2) {
     if (!obj1 || !obj2) return false;
@@ -58,7 +82,13 @@ const ActionProvider = ({ children }) => {
       const lastAction = actionList[actionList.length - 1];
 
       if (lastAction && isEqual(lastAction.initial, action.initial)) {
-        return actionList;
+        return actionList.map((existing) => {
+          if (existing.id === lastAction.id) {
+            return action;
+          } else {
+            return existing;
+          }
+        });
       }
       return [...actionList, action];
     });
@@ -66,7 +96,18 @@ const ActionProvider = ({ children }) => {
 
   return (
     <ActionContext.Provider
-      value={{ action, setAction, undo, actionToUndo, setActionToUndo }}
+      value={{
+        action,
+        setAction,
+        undo,
+        redo,
+        actionToUndo,
+        actionToRedo,
+        setActionToRedo,
+        setActionToUndo,
+        message,
+        setMessage,
+      }}
     >
       {children}
     </ActionContext.Provider>

@@ -20,6 +20,7 @@ const categories = [
         color: "#4F95FF",
         width: 100,
         length: 100,
+        icon: "ic:baseline-table-restaurant",
       },
       {
         id: 1,
@@ -27,6 +28,7 @@ const categories = [
         color: "#4F95FF",
         width: 180,
         length: 90,
+        icon: "ic:baseline-table-restaurant",
       },
       {
         id: 2,
@@ -34,6 +36,7 @@ const categories = [
         color: "#4F95FF",
         width: 360,
         length: 90,
+        icon: "ic:baseline-table-restaurant",
       },
     ],
   },
@@ -48,6 +51,7 @@ const categories = [
         color: "#4F95FF",
         width: 90,
         length: 90,
+        icon: "bx:chair",
       },
       {
         id: 4,
@@ -55,6 +59,7 @@ const categories = [
         color: "#4F95FF",
         width: 180,
         length: 90,
+        icon: "bx:chair",
       },
       {
         id: 5,
@@ -62,6 +67,7 @@ const categories = [
         color: "#4F95FF",
         width: 360,
         length: 90,
+        icon: "bx:chair",
       },
     ],
   },

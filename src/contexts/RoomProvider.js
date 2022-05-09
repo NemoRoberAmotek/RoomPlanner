@@ -32,10 +32,19 @@ const RoomProvider = ({ children }) => {
   const [scale, setScale] = useState(1.0);
   const [selectedFurniture, setSelectedFurniture] = useState(null);
   const [roomStyles, setRoomStyles] = useState(null);
+  const [tryToExport, setTryToExport] = useState(false);
+  const [snappingX, setSnappingX] = useState(false);
+  const [snappingY, setSnappingY] = useState(false);
 
   const windowSize = useWindowWidth();
   const roomBox = useRoomDomRect(scale, rotate);
-  const { setAction, actionToUndo, setActionToUndo } = useAction();
+  const {
+    setAction,
+    actionToUndo,
+    setActionToUndo,
+    actionToRedo,
+    setActionToRedo,
+  } = useAction();
   const { adjustToRotation, snapToRoom, snapToOthers } = useComputation(
     room,
     rotate
@@ -95,6 +104,12 @@ const RoomProvider = ({ children }) => {
     },
     [room, setAction]
   );
+
+  function exportImage() {
+    setSelectedFurniture(null);
+    clearAll();
+    setTryToExport(true);
+  }
 
   useEffect(() => {
     setRoom((room) => {
@@ -168,6 +183,36 @@ const RoomProvider = ({ children }) => {
     setAction,
   ]);
 
+  useEffect(() => {
+    if (!actionToRedo) return;
+
+    if (actionToRedo.type === "update") {
+      updateRoomFurniture(actionToRedo.new);
+    }
+
+    if (actionToRedo.type === "place") {
+      setRoom((room) => ({
+        ...room,
+        furniture: [...room.furniture, actionToRedo.new],
+      }));
+    }
+
+    if (actionToRedo.type === "delete") {
+      removeFurniture(actionToRedo.initial);
+    }
+    setSelectedFurniture(actionToRedo.initial);
+
+    setActionToRedo(null);
+    setAction(null);
+  }, [
+    actionToRedo,
+    setActionToRedo,
+    updateRoomFurniture,
+    removeFurniture,
+    setSelectedFurniture,
+    setAction,
+  ]);
+
   const moveFurniture = useCallback(
     (item, monitor) => {
       const diff = monitor.getDifferenceFromInitialOffset();
@@ -219,11 +264,21 @@ const RoomProvider = ({ children }) => {
         snappedPosY
       );
 
+      let posXFinal = snappedToOthersX,
+        posYFinal = snappedToOthersY;
+      if (snappingX) {
+        posXFinal = room.width / 2 - item.width / 2;
+      }
+
+      if (snappingY) {
+        posYFinal = room.length / 2 - item.length / 2;
+      }
+
       const movedItem = {
         ...item,
         position: {
-          posX: snappedToOthersX,
-          posY: snappedToOthersY,
+          posX: posXFinal,
+          posY: posYFinal,
         },
       };
 
@@ -241,6 +296,8 @@ const RoomProvider = ({ children }) => {
       }
     },
     [
+      snappingX,
+      snappingY,
       room,
       updateRoomFurniture,
       adjustToRotation,
@@ -432,12 +489,44 @@ const RoomProvider = ({ children }) => {
           placeFurniture(item, monitor);
         } else {
           moveFurniture(item, monitor);
+          setSnappingX(false);
+          setSnappingY(false);
         }
       },
       hover: (item, monitor) => {
         if (monitor.getItemType() === "card") {
           setScale(1);
           setRotate(0);
+        } else {
+          const diff = monitor.getDifferenceFromInitialOffset();
+
+          const rate = room.computedWidth / room.width;
+
+          const ratedDiff = {
+            x: Math.round(diff.x / rate / scale),
+            y: Math.round(diff.y / rate / scale),
+          };
+
+          let posX = item.position.posX + ratedDiff.x;
+          let posY = item.position.posY + ratedDiff.y;
+
+          if (
+            posX + item.width / 2 > room.width / 2 - 5 &&
+            posX + item.width / 2 < room.width / 2 + 5
+          ) {
+            setSnappingX(true);
+          } else {
+            setSnappingX(false);
+          }
+
+          if (
+            posY + item.length / 2 > room.length / 2 - 5 &&
+            posY + item.length / 2 < room.length / 2 + 5
+          ) {
+            setSnappingY(true);
+          } else {
+            setSnappingY(false);
+          }
         }
       },
     }),
@@ -466,10 +555,18 @@ const RoomProvider = ({ children }) => {
         removeFurniture,
         roomControlKeyEvents,
         runTranslate,
+        translate,
         setFurnitureZIndex,
         moveFurniture,
         duplicateFurniture,
         setScale,
+        tryToExport,
+        setTryToExport,
+        exportImage,
+        snappingX,
+        setSnappingX,
+        snappingY,
+        setSnappingY,
       }}
     >
       {children}

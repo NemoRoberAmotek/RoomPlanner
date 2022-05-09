@@ -9,7 +9,7 @@ const useLoader = () => {
     transform: translate(-50%, -50%);
   `;
 
-  return <BounceLoader css={center} />;
+  return <BounceLoader css={center} color="var(--color-primary)" />;
 };
 
 export default useLoader;

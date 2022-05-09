@@ -3,7 +3,7 @@ import { useAction } from "../contexts/ActionProvider";
 import { useEffect } from "react";
 
 const ActionAlert = () => {
-  const { action, setAction } = useAction();
+  const { action, setAction, undo } = useAction();
 
   useEffect(() => {
     if (action) {
@@ -25,6 +25,17 @@ const ActionAlert = () => {
       <div>
         <p className="p-bold">{action.title}</p>
         <small>{action.message}</small>
+        <div>
+          <small
+            className="action-undo-button"
+            onClick={undo}
+            role="button"
+            tabIndex="0"
+            onKeyPress={undo}
+          >
+            Undo
+          </small>
+        </div>
       </div>
     </div>
   );

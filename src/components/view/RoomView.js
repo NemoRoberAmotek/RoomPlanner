@@ -1,67 +1,72 @@
 import { useRoom } from "../../contexts/RoomProvider";
 import FurnitureItem from "./FurnitureItem";
 import CustomDragLayer from "./CustomDragLayer";
+import Message from "./Message";
 import Controls from "./Controls";
 import Rulers from "./Rulers";
-import { useEffect } from "react";
+import SnapLines from "./SnapLines";
 import "../../styles/room-view.css";
+import { useEffect } from "react";
+import domtoimage from "dom-to-image";
+import { saveAs } from "file-saver";
 
 const RoomView = () => {
   const {
     room,
-    zoomRoomIn,
-    zoomRoomOut,
     drop,
     roomStyles,
-    setSelectedFurniture,
+    setTryToExport,
+    scale,
+    rotate,
+    translate,
   } = useRoom();
 
   useEffect(() => {
-    const view = document.querySelector(".room-view");
-    view.addEventListener("wheel", (e) => {
-      if (e.deltaY > 0) {
-        zoomRoomOut();
-      } else {
-        zoomRoomIn();
+    setTryToExport((tryToExport) => {
+      if (!tryToExport) return false;
+
+      if (
+        scale === 1 &&
+        rotate === 0 &&
+        translate.x === 0 &&
+        translate.y === 0
+      ) {
+        const roomNode = document.querySelector(".room-image-wrapper");
+
+        setTimeout(function () {
+          domtoimage.toPng(roomNode).then(function (blob) {
+            saveAs(blob, "my-room.png");
+          });
+        }, 1000);
+
+        return false;
       }
     });
-  }, [zoomRoomIn, zoomRoomOut]);
-
-  useEffect(() => {
-    window.addEventListener("keydown", (e) => {
-      if (e.code === "Escape") {
-        setSelectedFurniture(null);
-      }
-    });
-  }, [setSelectedFurniture]);
-
-  const onRoomClick = (e) => {
-    if (
-      !e.target.classList.contains("furniture-in-view") &&
-      !e.target.closest(".furniture-in-view") &&
-      !e.target.closest(".ruler")
-    ) {
-      setSelectedFurniture(null);
-    }
-  };
+  }, [setTryToExport, scale, rotate, translate]);
 
   return (
     <div className="room-view">
+      <Message />
       <div
-        className="room"
-        style={roomStyles}
-        ref={drop}
-        onClick={onRoomClick}
-        onKeyPress={onRoomClick}
-        role="menu"
-        tabIndex="0"
+        className="room-image-wrapper"
+        style={{ padding: "4rem", backgroundColor: "#f5f5f5" }}
       >
-        <Rulers />
-        <CustomDragLayer />
-        {room.furniture.map((furniture, i) => (
-          <FurnitureItem key={i} furniture={furniture} />
-        ))}
+        <div
+          className="room"
+          style={roomStyles}
+          ref={drop}
+          role="menu"
+          tabIndex="0"
+        >
+          <Rulers />
+          <SnapLines />
+          <CustomDragLayer />
+          {room.furniture.map((furniture, i) => (
+            <FurnitureItem key={i} furniture={furniture} />
+          ))}
+        </div>
       </div>
+
       <Controls />
     </div>
   );

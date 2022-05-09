@@ -5,6 +5,24 @@
   justify-content: center;
 }
 
+.snap-line {
+  position: absolute;
+  background-color: red;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.snap-line-x {
+  width: 1px;
+  height: 120%;
+}
+
+.snap-line-y {
+  height: 1px;
+  width: 120%;
+}
+
 .ruler {
   position: absolute;
 }
@@ -284,4 +302,23 @@
 
 .furniture-item-controls-group.column {
   flex-direction: column;
+}
+
+.message {
+  position: absolute;
+  top: 2rem;
+  padding: 1rem;
+  background-color: white;
+  border-radius: 0.25rem;
+  box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 15%);
+  z-index: 15;
+}
+
+.message > .p-bold {
+  margin-bottom: 0.25rem;
+  color: var(--color-primary);
+}
+
+.message small {
+  color: var(--color-default);
 }

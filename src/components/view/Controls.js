@@ -1,6 +1,5 @@
 import { useRoom } from "../../contexts/RoomProvider";
 import { Icon } from "@iconify/react";
-import { useEffect } from "react";
 
 const Controls = () => {
   const {
@@ -13,16 +12,7 @@ const Controls = () => {
     runTranslate,
     clearTranslate,
     clearAll,
-    roomControlKeyEvents,
   } = useRoom();
-
-  useEffect(() => {
-    window.addEventListener("keydown", (e) => {
-      if (e.target.nodeName !== "INPUT") {
-        roomControlKeyEvents(e);
-      }
-    });
-  }, [roomControlKeyEvents]);
 
   return (
     <div className="controls">
@@ -58,7 +48,7 @@ const Controls = () => {
         <div className="controls-button-group">
           <button
             className={`button-icon primary ${scale === 0.2 && "disabled"}`}
-            onClick={zoomRoomOut}
+            onClick={() => zoomRoomOut()}
           >
             <Icon
               icon="fa6-solid:magnifying-glass-minus"
@@ -69,7 +59,7 @@ const Controls = () => {
               <small>-</small>
             </div>
           </button>
-          <button className="button-icon primary" onClick={zoomRoomIn}>
+          <button className="button-icon primary" onClick={() => zoomRoomIn()}>
             <Icon
               icon="fa6-solid:magnifying-glass-plus"
               color="var(--color-primary)"
