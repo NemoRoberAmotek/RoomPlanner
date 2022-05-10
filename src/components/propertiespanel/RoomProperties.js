@@ -8,16 +8,21 @@ import {
 import { useState, useEffect, useCallback } from "react";
 import useConvertUnits from "../../hooks/useConvertUnits";
 import { useGlobalSettings } from "../../contexts/GlobalSettingsProvider";
+import getTextures from "../../helpers/getTextures";
+import { v4 as uuidv4 } from "uuid";
 
 const RoomProperties = () => {
   const [width, setWidth] = useState(0);
   const [length, setLength] = useState(0);
+  const [initialValues, setInitialValues] = useState({});
 
   const { units } = useGlobalSettings();
   const { convertUnits, getUnitName } = useConvertUnits(units);
 
   const { room, setRoom } = useRoom();
   const { setAction } = useAction();
+
+  const { textures } = getTextures();
 
   useEffect(() => {
     setLength(room.length);
@@ -40,13 +45,29 @@ const RoomProperties = () => {
 
       setRoom({ ...room, [key]: value });
 
+      let initial = { ...room, [key]: initialValues[key] };
+
       setAction({
+        id: uuidv4(),
         title: `Room ${capitalizeString(key)} updated.`,
         message: `${capitalizeString(key)} was changed to ${value}`,
+        type: "room",
+        initial,
+        new: {
+          ...room,
+          [key]: value,
+        },
       });
     },
-    [convertUnits, room, setAction, setRoom, units]
+    [convertUnits, room, setAction, setRoom, units, initialValues]
   );
+
+  const onInputFocus = useCallback((e) => {
+    const val = tryToInteger(e.target.value);
+    const key = e.target.getAttribute("id");
+
+    setInitialValues((initialValues) => ({ ...initialValues, [key]: val }));
+  }, []);
 
   return (
     <div>
@@ -100,14 +121,32 @@ const RoomProperties = () => {
           />
         </div>
       </div>
-      <div className="form-control">
-        <label htmlFor="color">Color</label>
-        <input
-          type="color"
-          id="color"
-          value={room.color}
-          onChange={onInputChange}
-        />
+      <div className="form-col">
+        <div className="form-control">
+          <label htmlFor="color">Color</label>
+          <input
+            type="color"
+            id="color"
+            value={room.color}
+            onChange={onInputChange}
+            onFocus={onInputFocus}
+          />
+        </div>
+        <div className="form-control">
+          <label htmlFor="texture">Texture</label>
+          <select
+            name="texture"
+            id="texture"
+            value={room.texture}
+            onChange={onInputChange}
+          >
+            {Object.keys(textures).map((texture, i) => (
+              <option key={i} value={texture}>
+                {capitalizeString(texture)}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
     </div>
   );

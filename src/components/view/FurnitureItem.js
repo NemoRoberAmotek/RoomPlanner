@@ -4,12 +4,15 @@ import { useState, useEffect } from "react";
 import { getEmptyImage } from "react-dnd-html5-backend";
 import { useDrag } from "react-dnd";
 import useComputation from "../../hooks/useComputation";
+import getTextures from "../../helpers/getTextures";
 import { ItemTypes } from "../../Constants";
 import { Icon } from "@iconify/react";
 
 const FurnitureItem = ({ furniture }) => {
   const [selected, setSelected] = useState(false);
   const [showControls, setShowControls] = useState(true);
+
+  const { textures } = getTextures();
 
   const {
     room,
@@ -89,6 +92,8 @@ const FurnitureItem = ({ furniture }) => {
         backgroundColor: furniture.color,
         "--color-box-shadow": `${furniture.color}80`,
         zIndex: selected ? 10 : furniture.zIndex,
+        backgroundImage: `url(${textures[furniture.texture]})`,
+        backgroundSize: `${width / 5}px`,
       }}
       id={`${furniture.placement_id}`}
       ref={selected ? drag : null}

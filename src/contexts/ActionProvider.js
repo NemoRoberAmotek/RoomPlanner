@@ -59,7 +59,7 @@ const ActionProvider = ({ children }) => {
     let equal = true;
 
     props1.forEach((prop) => {
-      if (Object.getOwnPropertyNames(obj1[prop])) {
+      if (typeof prop === "object") {
         const innerProps1 = Object.getOwnPropertyNames(obj1[prop]);
         innerProps1.forEach((innerProp) => {
           if (obj1[prop][innerProp] !== obj2[prop][innerProp]) {

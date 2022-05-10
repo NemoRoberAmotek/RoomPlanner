@@ -21,6 +21,7 @@ const categories = [
         width: 100,
         length: 100,
         icon: "ic:baseline-table-restaurant",
+        texture: "wood",
       },
       {
         id: 1,
@@ -29,6 +30,7 @@ const categories = [
         width: 180,
         length: 90,
         icon: "ic:baseline-table-restaurant",
+        texture: "wood",
       },
       {
         id: 2,
@@ -37,6 +39,7 @@ const categories = [
         width: 360,
         length: 90,
         icon: "ic:baseline-table-restaurant",
+        texture: "wood",
       },
     ],
   },
@@ -52,6 +55,7 @@ const categories = [
         width: 90,
         length: 90,
         icon: "bx:chair",
+        texture: "wood",
       },
       {
         id: 4,
@@ -60,6 +64,7 @@ const categories = [
         width: 180,
         length: 90,
         icon: "bx:chair",
+        texture: "wood",
       },
       {
         id: 5,
@@ -68,6 +73,7 @@ const categories = [
         width: 360,
         length: 90,
         icon: "bx:chair",
+        texture: "wood",
       },
     ],
   },

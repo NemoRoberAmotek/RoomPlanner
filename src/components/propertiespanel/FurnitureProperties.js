@@ -11,6 +11,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Icon } from "@iconify/react";
 import useConvertUnits from "../../hooks/useConvertUnits";
 import { v4 as uuidv4 } from "uuid";
+import getTextures from "../../helpers/getTextures";
 
 const FurnitureProperties = () => {
   const [formWarning, setFormWarning] = useState();
@@ -36,6 +37,8 @@ const FurnitureProperties = () => {
   const [width, setWidth] = useState(0);
 
   const [length, setLength] = useState(0);
+
+  const { textures } = getTextures();
 
   useEffect(() => {
     setLength(selectedFurniture.length);
@@ -340,15 +343,33 @@ const FurnitureProperties = () => {
           )}
         </div>
       </div>
-      <div className="form-control">
-        <label htmlFor="color">Color</label>
-        <input
-          type="color"
-          id="color"
-          value={selectedFurniture.color}
-          onChange={onInputChange}
-          onFocus={onInputFocus}
-        />
+      <div className="form-col">
+        <div className="form-control">
+          <label htmlFor="color">Color</label>
+          <input
+            type="color"
+            id="color"
+            value={selectedFurniture.color}
+            onChange={onInputChange}
+            onFocus={onInputFocus}
+          />
+        </div>
+        <div className="form-control">
+          <label htmlFor="texture">Texture</label>
+          <select
+            name="texture"
+            id="texture"
+            value={selectedFurniture.texture}
+            onChange={onInputChange}
+            onFocus={onInputFocus}
+          >
+            {Object.keys(textures).map((texture, i) => (
+              <option key={i} value={texture}>
+                {capitalizeString(texture)}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
     </div>
   );

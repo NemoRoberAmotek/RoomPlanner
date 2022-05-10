@@ -3,6 +3,7 @@ import {
   createContext,
   useContext,
   useEffect,
+  useMemo,
   useCallback,
 } from "react";
 import PropTypes from "prop-types";
@@ -14,6 +15,7 @@ import useRoomTransform from "../hooks/useRoomTransform";
 import useComputation from "../hooks/useComputation";
 import { useAction } from "./ActionProvider";
 import { v4 as uuidv4 } from "uuid";
+import getTextures from "../helpers/getTextures";
 
 const RoomContext = createContext();
 
@@ -22,6 +24,7 @@ const roomDummy = {
   width: 400,
   length: 200,
   color: "#FFFFFF",
+  texture: "wood",
   furniture: [],
 };
 
@@ -66,6 +69,8 @@ const RoomProvider = ({ children }) => {
     translate,
     setTranslate
   );
+
+  const { textures } = useMemo(() => getTextures(), []);
 
   const updateRoomFurniture = useCallback(
     (item) => {
@@ -133,7 +138,11 @@ const RoomProvider = ({ children }) => {
         height: `${roomHeight}px`,
         transform: `rotateZ(${rotate}deg) scale(${scale}) translate(${translate.x}px, ${translate.y}px)`,
         backgroundColor: room.color,
+        backgroundImage: `url(${textures[room.texture]})`,
+        backgroundSize: `${roomWidth / 10}px`,
       }));
+
+      console.log(textures);
 
       return {
         ...room,
@@ -142,12 +151,15 @@ const RoomProvider = ({ children }) => {
       };
     });
   }, [
+    textures,
     translate,
     windowSize,
     rotate,
     scale,
+    room.color,
     room.length,
     room.width,
+    room.texture,
     setRoomStyles,
     setRoom,
   ]);
@@ -171,6 +183,10 @@ const RoomProvider = ({ children }) => {
     }
 
     setSelectedFurniture(actionToUndo.initial);
+    if (actionToUndo.type === "room") {
+      setRoom(actionToUndo.initial);
+      setSelectedFurniture(null);
+    }
 
     setActionToUndo(null);
     setAction(null);
@@ -200,7 +216,13 @@ const RoomProvider = ({ children }) => {
     if (actionToRedo.type === "delete") {
       removeFurniture(actionToRedo.initial);
     }
+
     setSelectedFurniture(actionToRedo.initial);
+
+    if (actionToRedo.type === "room") {
+      setRoom(actionToRedo.new);
+      setSelectedFurniture(null);
+    }
 
     setActionToRedo(null);
     setAction(null);
