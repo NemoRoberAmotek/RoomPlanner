@@ -80,6 +80,12 @@ body *:focus {
   color: var(--color-primary);
 }
 
+.ghost {
+  padding: 0;
+  border: 0;
+  font-weight: normal;
+}
+
 .button-box {
   display: flex;
   align-items: center;
