@@ -4,8 +4,8 @@ import useComputation from "../../hooks/useComputation";
 import getTextures from "../../helpers/getTextures";
 
 const FurnitureItemPreview = ({ furniture }) => {
-  const { room } = useRoom();
-  const { dataToComputed } = useComputation(room);
+  const { room, computedRoom } = useRoom();
+  const { dataToComputed } = useComputation(computedRoom, room);
   const { width, height } = dataToComputed(furniture);
   const { textures } = getTextures();
 

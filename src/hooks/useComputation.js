@@ -1,9 +1,9 @@
 import { useCallback } from "react";
 
-const useComputation = (room, rotate) => {
+const useComputation = (computedRoom, room, rotate) => {
   const dataToComputed = useCallback(
     (furnitureItem) => {
-      if (!room.computedWidth)
+      if (!computedRoom.computedWidth)
         return {
           width: 0,
           height: 0,
@@ -16,7 +16,7 @@ const useComputation = (room, rotate) => {
       const posX = furnitureItem.position.posX;
       const posY = furnitureItem.position.posY;
 
-      const renderRate = room.width / room.computedWidth;
+      const renderRate = room.width / computedRoom.computedWidth;
 
       let widthRated = Math.round(itemX / renderRate);
       let heightRated = Math.round(itemY / renderRate);
@@ -32,7 +32,7 @@ const useComputation = (room, rotate) => {
 
       return renderSizeAndPosition;
     },
-    [room]
+    [room, computedRoom]
   );
 
   const snapToRoom = useCallback(

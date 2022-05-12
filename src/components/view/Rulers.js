@@ -4,10 +4,16 @@ import useConverUnits from "../../hooks/useConvertUnits";
 import useComputation from "../../hooks/useComputation";
 
 const Rulers = () => {
-  const { room, rotate, selectedFurniture, setSelectedFurniture } = useRoom();
+  const {
+    room,
+    computedRoom,
+    rotate,
+    selectedFurniture,
+    setSelectedFurniture,
+  } = useRoom();
   const { units } = useGlobalSettings();
 
-  const { dataToComputed } = useComputation(room, rotate);
+  const { dataToComputed } = useComputation(computedRoom, room, rotate);
 
   const { convertUnitsToString } = useConverUnits(units);
 
@@ -26,7 +32,7 @@ const Rulers = () => {
     <>
       <div
         className="ruler ruler-x"
-        style={{ width: `${room.computedWidth}px` }}
+        style={{ width: `${computedRoom.computedWidth}px` }}
       >
         <div className="ruler-numbers">
           <small>{convertUnitsToString(0)}</small>
@@ -82,7 +88,7 @@ const Rulers = () => {
       </div>
       <div
         className="ruler ruler-y"
-        style={{ height: `${room.computedHeight}px` }}
+        style={{ height: `${computedRoom.computedHeight}px` }}
       >
         <div className="ruler-numbers">
           <small>{convertUnitsToString(0)}</small>

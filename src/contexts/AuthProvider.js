@@ -7,10 +7,12 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [guest, setGuest] = useState(false);
   const [userRooms, setUserRooms] = useState([]);
+  const [token, setToken] = useState(null);
 
   useEffect(() => {
     const localToken = localStorage.getItem("token");
     if (localToken) {
+      setToken(localToken);
       authUser(localToken);
       fetchRoomsByToken(localToken);
     }
@@ -41,6 +43,7 @@ const AuthProvider = ({ children }) => {
 
     if (res.status === 200) {
       authUser(data.token);
+      setToken(data.token);
       localStorage.setItem("token", data.token);
     }
 
@@ -61,6 +64,7 @@ const AuthProvider = ({ children }) => {
     if (res.status === 200) {
       authUser(data.token);
       fetchRoomsByToken(data.token);
+      setToken(data.token);
       localStorage.setItem("token", data.token);
     }
 
@@ -80,6 +84,7 @@ const AuthProvider = ({ children }) => {
 
   const logoutUser = () => {
     setUser(null);
+    setToken(null);
     setGuest(false);
     localStorage.removeItem("token");
   };
@@ -92,6 +97,7 @@ const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         guest,
+        token,
         loginGuest,
         user,
         setUser,

@@ -14,6 +14,7 @@ import useRoomDomRect from "../hooks/useRoomDomRect";
 import useRoomTransform from "../hooks/useRoomTransform";
 import useComputation from "../hooks/useComputation";
 import { useAction } from "./ActionProvider";
+import { useAuth } from "./AuthProvider";
 import { v4 as uuidv4 } from "uuid";
 import getTextures from "../helpers/getTextures";
 
@@ -29,12 +30,12 @@ const roomDummy = {
 };
 
 const RoomProvider = ({ children }) => {
-  const [room, setRoom] = useState(roomDummy);
+  const [room, setRoom] = useState(null);
   const [translate, setTranslate] = useState({ x: 0, y: 0 });
   const [rotate, setRotate] = useState(0);
   const [scale, setScale] = useState(1.0);
   const [selectedFurniture, setSelectedFurniture] = useState(null);
-  const [roomStyles, setRoomStyles] = useState(null);
+  const [computedRoom, setComputedRoom] = useState({});
   const [tryToExport, setTryToExport] = useState(false);
   const [snappingX, setSnappingX] = useState(false);
   const [snappingY, setSnappingY] = useState(false);
@@ -49,6 +50,7 @@ const RoomProvider = ({ children }) => {
     setActionToRedo,
   } = useAction();
   const { adjustToRotation, snapToRoom, snapToOthers } = useComputation(
+    computedRoom,
     room,
     rotate
   );
@@ -69,6 +71,8 @@ const RoomProvider = ({ children }) => {
     translate,
     setTranslate
   );
+
+  const { userRooms, guest } = useAuth();
 
   const { textures } = useMemo(() => getTextures(), []);
 
@@ -117,50 +121,45 @@ const RoomProvider = ({ children }) => {
   }
 
   useEffect(() => {
-    setRoom((room) => {
-      if (!room) return;
+    if (guest) {
+      setRoom(roomDummy);
+    }
+  }, [guest]);
 
-      let ratio, roomWidth, roomHeight;
+  useEffect(() => {
+    if (userRooms.length > 0) {
+      setRoom(userRooms[0]);
+    }
+  }, [userRooms]);
 
-      if (room.width > room.length) {
-        ratio = room.length / room.width;
-        roomWidth = Math.round(windowSize.width * 0.5);
-        roomHeight = Math.round(windowSize.width * 0.5 * ratio);
-      } else {
-        ratio = room.width / room.length;
-        roomWidth = Math.round(windowSize.height * 0.75 * ratio);
-        roomHeight = Math.round(windowSize.height * 0.75);
-      }
+  useEffect(() => {
+    if (!room) return;
 
-      setRoomStyles((roomStyles) => ({
-        ...roomStyles,
+    let ratio, roomWidth, roomHeight;
+
+    if (room.width > room.length) {
+      ratio = room.length / room.width;
+      roomWidth = Math.round(windowSize.width * 0.5);
+      roomHeight = Math.round(windowSize.width * 0.5 * ratio);
+    } else {
+      ratio = room.width / room.length;
+      roomWidth = Math.round(windowSize.height * 0.75 * ratio);
+      roomHeight = Math.round(windowSize.height * 0.75);
+    }
+
+    setComputedRoom({
+      computedWidth: roomWidth,
+      computedHeight: roomHeight,
+      styles: {
         width: `${roomWidth}px`,
         height: `${roomHeight}px`,
         transform: `rotateZ(${rotate}deg) scale(${scale}) translate(${translate.x}px, ${translate.y}px)`,
         backgroundColor: room.color,
         backgroundImage: `url(${textures[room.texture]})`,
         backgroundSize: `${roomWidth / 10}px`,
-      }));
-
-      return {
-        ...room,
-        computedWidth: roomWidth,
-        computedHeight: roomHeight,
-      };
+      },
     });
-  }, [
-    textures,
-    translate,
-    windowSize,
-    rotate,
-    scale,
-    room.color,
-    room.length,
-    room.width,
-    room.texture,
-    setRoomStyles,
-    setRoom,
-  ]);
+  }, [room, rotate, scale, textures, translate, windowSize]);
 
   useEffect(() => {
     if (!actionToUndo) return;
@@ -237,7 +236,7 @@ const RoomProvider = ({ children }) => {
     (item, monitor) => {
       const diff = monitor.getDifferenceFromInitialOffset();
 
-      const rate = room.computedWidth / room.width;
+      const rate = computedRoom.computedWidth / room.width;
 
       const ratedDiff = {
         x: Math.round(diff.x / rate / scale),
@@ -325,6 +324,7 @@ const RoomProvider = ({ children }) => {
       snapToRoom,
       setAction,
       scale,
+      computedRoom,
     ]
   );
 
@@ -335,7 +335,7 @@ const RoomProvider = ({ children }) => {
       const roomY = roomBox.y;
       let x, y;
 
-      const rate = room.computedWidth / room.width;
+      const rate = computedRoom.computedWidth / room.width;
 
       x = pos.x - roomX - item.width;
       y = pos.y - roomY - item.length;
@@ -378,7 +378,7 @@ const RoomProvider = ({ children }) => {
 
       setSelectedFurniture(itemWithPosition);
     },
-    [room, snapToRoom, setAction, roomBox]
+    [room, computedRoom, snapToRoom, setAction, roomBox]
   );
 
   const rotateFurniture = useCallback(
@@ -569,7 +569,7 @@ const RoomProvider = ({ children }) => {
         selectedFurniture,
         setSelectedFurniture,
         drop,
-        roomStyles,
+        computedRoom,
         rotateFurniture,
         updateRoomFurniture,
         removeFurniture,

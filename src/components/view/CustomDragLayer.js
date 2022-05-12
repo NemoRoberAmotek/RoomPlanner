@@ -21,6 +21,7 @@ function getItemStyles(
   rotate,
   item,
   room,
+  computedRoom,
   scale
 ) {
   if (!initialOffset || !currentOffset) {
@@ -33,7 +34,7 @@ function getItemStyles(
   const diffX = currentOffset.x - initialOffset.x;
   const diffY = currentOffset.y - initialOffset.y;
 
-  const rate = room.width / room.computedWidth;
+  const rate = room.width / computedRoom.computedWidth;
 
   if (rotate === 90) {
     if (item.position) {
@@ -73,7 +74,7 @@ function getItemStyles(
 
 const CustomDragLayer = () => {
   const roomBox = useRoomDomRect();
-  const { room, rotate, scale } = useRoom();
+  const { room, rotate, scale, computedRoom } = useRoom();
 
   const {
     itemType,
@@ -112,6 +113,7 @@ const CustomDragLayer = () => {
           rotate,
           item,
           room,
+          computedRoom,
           scale
         )}
       >

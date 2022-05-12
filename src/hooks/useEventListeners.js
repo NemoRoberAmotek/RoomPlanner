@@ -48,24 +48,28 @@ const useEventListeners = () => {
 
   const setRoomViewEvents = useCallback(() => {
     const view = document.querySelector(".room-view");
-    view.addEventListener("wheel", (e) => {
-      if (e.deltaY > 0) {
-        zoomRoomOut();
-      } else {
-        zoomRoomIn();
-      }
-    });
+    if (view) {
+      view.addEventListener("wheel", (e) => {
+        if (e.deltaY > 0) {
+          zoomRoomOut();
+        } else {
+          zoomRoomIn();
+        }
+      });
+    }
 
     const room = view.querySelector(".room");
-    room.addEventListener("click", (e) => {
-      if (
-        !e.target.classList.contains("furniture-in-view") &&
-        !e.target.closest(".furniture-in-view") &&
-        !e.target.closest(".ruler")
-      ) {
-        setSelectedFurniture(null);
-      }
-    });
+    if (room) {
+      room.addEventListener("click", (e) => {
+        if (
+          !e.target.classList.contains("furniture-in-view") &&
+          !e.target.closest(".furniture-in-view") &&
+          !e.target.closest(".ruler")
+        ) {
+          setSelectedFurniture(null);
+        }
+      });
+    }
   }, [zoomRoomIn, zoomRoomOut, setSelectedFurniture]);
 
   return [setWindowKeyEvents, setRoomViewEvents];

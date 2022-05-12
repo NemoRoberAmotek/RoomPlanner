@@ -17,6 +17,7 @@ const FurnitureItem = ({ furniture }) => {
   const {
     room,
     rotate,
+    computedRoom,
     rotateFurniture,
     selectedFurniture,
     setSelectedFurniture,
@@ -25,7 +26,7 @@ const FurnitureItem = ({ furniture }) => {
     duplicateFurniture,
   } = useRoom();
 
-  const { dataToComputed } = useComputation(room, rotate);
+  const { dataToComputed } = useComputation(computedRoom, room, rotate);
 
   const { width, height, posX, posY } = dataToComputed(furniture);
 

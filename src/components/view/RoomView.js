@@ -9,17 +9,20 @@ import "../../styles/room-view.css";
 import { useEffect } from "react";
 import domtoimage from "dom-to-image";
 import { saveAs } from "file-saver";
+import useEventListeners from "../../hooks/useEventListeners";
 
 const RoomView = () => {
   const {
     room,
     drop,
-    roomStyles,
+    computedRoom,
     setTryToExport,
     scale,
     rotate,
     translate,
   } = useRoom();
+
+  const [, setRoomViewEvents] = useEventListeners();
 
   useEffect(() => {
     setTryToExport((tryToExport) => {
@@ -44,6 +47,10 @@ const RoomView = () => {
     });
   }, [setTryToExport, scale, rotate, translate]);
 
+  useEffect(() => {
+    setRoomViewEvents();
+  }, [setRoomViewEvents]);
+
   return (
     <div className="room-view">
       <Message />
@@ -53,7 +60,7 @@ const RoomView = () => {
       >
         <div
           className="room"
-          style={roomStyles}
+          style={computedRoom.styles}
           ref={drop}
           role="menu"
           tabIndex="0"

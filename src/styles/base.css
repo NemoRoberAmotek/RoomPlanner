@@ -217,8 +217,14 @@ select {
   width: calc(100% - 1rem - 2px);
 }
 
+select {
+  width: 100%;
+}
+
 input[type="color"] {
   padding: 0;
+  width: 100%;
+  height: 34px;
 }
 
 input:focus,

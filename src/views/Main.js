@@ -4,32 +4,22 @@ import PropertiesPanel from "../components/PropertiesPanel";
 import AddRoomForm from "../components/AddRoomForm.js";
 import RoomView from "../components/view/RoomView";
 import { useRoom } from "../contexts/RoomProvider";
-// import { useAction } from "../contexts/ActionProvider";
+import { useAuth } from "../contexts/AuthProvider";
 import { useEffect } from "react";
 import useEventListeners from "../hooks/useEventListeners";
 
 const Main = () => {
-  // const { undo } = useAction();
   const { room } = useRoom();
-  const [setWindowKeyEvents, setRoomViewEvents] = useEventListeners();
+  const { guest } = useAuth();
+  const [setWindowKeyEvents] = useEventListeners();
 
   useEffect(() => {
     setWindowKeyEvents();
-    setRoomViewEvents();
-  }, [setWindowKeyEvents, setRoomViewEvents]);
+  }, [setWindowKeyEvents]);
 
-  //TO BE REPLACED
-  // useEffect(() => {
-  //   window.addEventListener("keypress", (e) => {
-  //     if (e.target.nodeName !== "INPUT") {
-  //       if (e.key === "\x1A" && e.ctrlKey) {
-  //         undo();
-  //       }
-  //     }
-  //   });
-  // }, [undo]);
+  if (!room && !guest) return <AddRoomForm />;
 
-  if (!room) return <AddRoomForm />;
+  if (!room && guest) return <p>Loading...</p>;
 
   return (
     <div className="app-layout">
