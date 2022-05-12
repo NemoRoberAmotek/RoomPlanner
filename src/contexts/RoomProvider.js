@@ -142,8 +142,6 @@ const RoomProvider = ({ children }) => {
         backgroundSize: `${roomWidth / 10}px`,
       }));
 
-      console.log(textures);
-
       return {
         ...room,
         computedWidth: roomWidth,

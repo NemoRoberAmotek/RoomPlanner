@@ -1,21 +1,19 @@
 import IconLink from "../IconLink";
 import { useRoom } from "../../contexts/RoomProvider";
-import { useAuth0 } from "@auth0/auth0-react";
 import { useState } from "react";
+import { useAuth } from "../../contexts/AuthProvider";
 
 const PropertiesTopMenu = () => {
   const { exportImage } = useRoom();
-  const { isLoading, isAuthenticated, user, logout } = useAuth0();
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
-
-  if (isLoading) return <p>Loading...</p>;
+  const { user, logoutUser } = useAuth();
 
   return (
     <div className="panel-menu">
       <IconLink name="Export" action={exportImage} icon="fa-solid:download" />
       <div className="account-menu-wrapper">
         <IconLink
-          name={isAuthenticated ? user.name : "Guest"}
+          name={user ? user.name : "Guest"}
           action={() => setAccountMenuOpen(!accountMenuOpen)}
           classNames="color-dark reverse"
           icon="fa6-solid:user"
@@ -31,7 +29,7 @@ const PropertiesTopMenu = () => {
             />
             <IconLink
               name="Logout"
-              action={() => logout({ returnTo: window.location.origin })}
+              action={logoutUser}
               classNames="color-default"
               icon="mdi:logout"
             />
