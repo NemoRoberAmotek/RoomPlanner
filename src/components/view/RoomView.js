@@ -1,7 +1,6 @@
 import { useRoom } from "../../contexts/RoomProvider";
 import FurnitureItem from "./FurnitureItem";
 import CustomDragLayer from "./CustomDragLayer";
-import Message from "./Message";
 import Controls from "./Controls";
 import Rulers from "./Rulers";
 import SnapLines from "./SnapLines";
@@ -53,7 +52,6 @@ const RoomView = () => {
 
   return (
     <div className="room-view">
-      <Message />
       <div
         className="room-image-wrapper"
         style={{ padding: "4rem", backgroundColor: "#f5f5f5" }}

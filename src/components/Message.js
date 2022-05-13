@@ -1,8 +1,8 @@
-import { useAction } from "../../contexts/ActionProvider";
+import { useMessage } from "../contexts/MessageProvider";
 import { useEffect } from "react";
 
 const Message = () => {
-  const { message, setMessage } = useAction();
+  const { message, setMessage } = useMessage();
 
   useEffect(() => {
     if (!message) return;

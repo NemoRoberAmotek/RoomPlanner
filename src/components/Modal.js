@@ -4,9 +4,12 @@ const Modal = ({ render = (f) => f, onClose = (f) => f }) => {
   return (
     <div className="modal-outer">
       <div className="modal-inner">
-        <button className="button-default" onClick={onClose}>
-          Close
-        </button>
+        <div className="modal-top-bar">
+          <button className="button-default" onClick={onClose}>
+            Close
+          </button>
+        </div>
+
         {render()}
       </div>
     </div>

@@ -17,6 +17,7 @@ import { useAction } from "./ActionProvider";
 import { useAuth } from "./AuthProvider";
 import { v4 as uuidv4 } from "uuid";
 import getTextures from "../helpers/getTextures";
+import { useParams } from "react-router-dom";
 
 const RoomContext = createContext();
 
@@ -41,7 +42,7 @@ const RoomProvider = ({ children }) => {
   const [snappingY, setSnappingY] = useState(false);
 
   const windowSize = useWindowWidth();
-  const roomBox = useRoomDomRect(scale, rotate);
+  const roomBox = useRoomDomRect(room, scale, rotate);
   const {
     setAction,
     actionToUndo,
@@ -75,6 +76,8 @@ const RoomProvider = ({ children }) => {
   const { userRooms, guest } = useAuth();
 
   const { textures } = useMemo(() => getTextures(), []);
+
+  const params = useParams();
 
   const updateRoomFurniture = useCallback(
     (item) => {
@@ -128,9 +131,9 @@ const RoomProvider = ({ children }) => {
 
   useEffect(() => {
     if (userRooms.length > 0) {
-      setRoom(userRooms[0]);
+      setRoom(userRooms.find((room) => room._id === params.id));
     }
-  }, [userRooms]);
+  }, [userRooms, params]);
 
   useEffect(() => {
     if (!room) return;
@@ -303,6 +306,8 @@ const RoomProvider = ({ children }) => {
 
       updateRoomFurniture(movedItem);
       setSelectedFurniture(movedItem);
+      setSnappingX(false);
+      setSnappingY(false);
       if (!error) {
         setAction({
           id: uuidv4(),
@@ -351,6 +356,8 @@ const RoomProvider = ({ children }) => {
         ratedPos.y
       );
 
+      console.log(pos, roomX, item.width);
+
       const itemWithPosition = {
         placement_id: uuidv4(),
         ...item,
@@ -377,6 +384,9 @@ const RoomProvider = ({ children }) => {
       });
 
       setSelectedFurniture(itemWithPosition);
+
+      setSnappingX(false);
+      setSnappingY(false);
     },
     [room, computedRoom, snapToRoom, setAction, roomBox]
   );
@@ -509,8 +519,6 @@ const RoomProvider = ({ children }) => {
           placeFurniture(item, monitor);
         } else {
           moveFurniture(item, monitor);
-          setSnappingX(false);
-          setSnappingY(false);
         }
       },
       hover: (item, monitor) => {
@@ -520,7 +528,7 @@ const RoomProvider = ({ children }) => {
         } else {
           const diff = monitor.getDifferenceFromInitialOffset();
 
-          const rate = room.computedWidth / room.width;
+          const rate = computedRoom.computedWidth / room.width;
 
           const ratedDiff = {
             x: Math.round(diff.x / rate / scale),
@@ -550,7 +558,7 @@ const RoomProvider = ({ children }) => {
         }
       },
     }),
-    [room, roomBox, rotate]
+    [computedRoom, room, roomBox, rotate]
   );
 
   return (

@@ -2,6 +2,7 @@ import useInput from "../../hooks/useInput";
 import { useAuth } from "../../contexts/AuthProvider";
 import { useState } from "react";
 import PasswordField from "./PasswordField";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
   const [emailProps, resetEmail] = useInput("");
@@ -9,6 +10,8 @@ const LoginForm = () => {
   const [errors, setErrors] = useState([]);
 
   const { loginUser } = useAuth();
+
+  const navigate = useNavigate();
 
   const submitLogin = async (e) => {
     e.preventDefault();
@@ -22,6 +25,7 @@ const LoginForm = () => {
     }
     resetEmail();
     resetPassword();
+    navigate("/dashboard");
   };
 
   return (

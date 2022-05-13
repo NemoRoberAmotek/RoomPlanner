@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const useRoomDomRect = (scale, rotate) => {
+const useRoomDomRect = (room, scale, rotate) => {
   const [roomBox, setRoomBox] = useState({});
 
   useEffect(() => {
@@ -15,7 +15,7 @@ const useRoomDomRect = (scale, rotate) => {
       width: domRect.width,
       height: domRect.height,
     });
-  }, []);
+  }, [room]);
 
   useEffect(() => {
     const room = document.querySelector(".room");

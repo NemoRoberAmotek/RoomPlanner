@@ -1,12 +1,12 @@
-import { useRoom } from "../contexts/RoomProvider";
 import { useAuth } from "../contexts/AuthProvider";
 import useInput from "../hooks/useInput";
 import { capitalizeString, tryToInteger } from "../helpers/strings";
 import getTextures from "../helpers/getTextures";
 import { useState } from "react";
+import PropTypes from "prop-types";
 
-const AddRoomForm = () => {
-  const { setRoom } = useRoom();
+const AddRoomForm = ({ callback = (f) => f }) => {
+  const { setUserRooms } = useAuth();
   const [nameProps, resetName] = useInput("");
   const [widthProps, resetWidth] = useInput(0);
   const [lengthProps, resetLength] = useInput(0);
@@ -35,6 +35,7 @@ const AddRoomForm = () => {
     resetLength();
     resetColor();
     ressetTexture();
+    callback();
   };
 
   const postRoomToServer = async (roomData) => {
@@ -50,7 +51,7 @@ const AddRoomForm = () => {
     const data = await res.json();
 
     if (res.status === 200) {
-      setRoom(data);
+      setUserRooms((rooms) => [...rooms, data]);
     } else {
       if (res.errors) {
         setErrors(res.errors);
@@ -59,8 +60,8 @@ const AddRoomForm = () => {
   };
 
   return (
-    <div className="add-room-page">
-      <h2>Add your first room.</h2>
+    <div>
+      <h2>Add a room.</h2>
       {errors.length > 0 && (
         <div className="form-errors">
           {errors.map((error, i) => (
@@ -127,6 +128,10 @@ const AddRoomForm = () => {
       </form>
     </div>
   );
+};
+
+AddRoomForm.propTypes = {
+  callback: PropTypes.func,
 };
 
 export default AddRoomForm;

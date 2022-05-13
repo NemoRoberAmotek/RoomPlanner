@@ -2,6 +2,7 @@ import useInput from "../../hooks/useInput";
 import { useAuth } from "../../contexts/AuthProvider";
 import { useState } from "react";
 import PasswordField from "./PasswordField";
+import { useNavigate } from "react-router-dom";
 
 const RegisterForm = () => {
   const [nameProps, resetName] = useInput("");
@@ -11,6 +12,8 @@ const RegisterForm = () => {
   const [errors, setErrors] = useState([]);
 
   const { registerUser } = useAuth();
+
+  const navigate = useNavigate();
 
   const submitRegister = async (e) => {
     e.preventDefault();
@@ -29,6 +32,7 @@ const RegisterForm = () => {
     resetPassword();
     resetName();
     resetPasswordConfirm();
+    navigate("/dashboard");
   };
 
   return (

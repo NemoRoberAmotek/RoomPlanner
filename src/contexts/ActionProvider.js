@@ -5,6 +5,7 @@ import {
   useEffect,
   useCallback,
 } from "react";
+import { useMessage } from "./MessageProvider";
 import PropTypes from "prop-types";
 
 const ActionContext = createContext();
@@ -15,39 +16,45 @@ const ActionProvider = ({ children }) => {
   const [actionToUndo, setActionToUndo] = useState(null);
   const [, setActionsUndone] = useState([]);
   const [actionToRedo, setActionToRedo] = useState(null);
-  const [message, setMessage] = useState(null);
+  const { message, setMessage } = useMessage();
 
   const undo = useCallback(() => {
+    let message = null;
     setActionList((actionList) => {
       const lastAction = actionList[actionList.length - 1];
       if (!lastAction) {
-        setMessage({
+        message = {
           title: "There's nothing to undo.",
           content: "There are no actions that can be undone at this moment",
-        });
+        };
         return actionList;
       }
       setActionToUndo(lastAction);
       setActionsUndone((actionsUndone) => [...actionsUndone, lastAction]);
       return actionList.filter((action) => action.id !== lastAction.id);
     });
+
+    setMessage(message);
   }, [setActionList, setMessage]);
 
   const redo = useCallback(() => {
+    let message = null;
     setActionsUndone((actionsUndone) => {
       const lastAction = actionsUndone[actionsUndone.length - 1];
       if (!lastAction) {
-        setMessage({
+        message = {
           title: "There's nothing to redo.",
           content: "There are no actions that can be redone at this moment",
-        });
+        };
         return actionsUndone;
       }
       setActionToRedo(lastAction);
       setActionList((actionList) => [...actionList, lastAction]);
       return actionsUndone.filter((action) => action.id !== lastAction.id);
     });
-  }, []);
+
+    setMessage(message);
+  }, [setMessage]);
 
   function isEqual(obj1, obj2) {
     if (!obj1 || !obj2) return false;

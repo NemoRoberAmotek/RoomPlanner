@@ -5,10 +5,9 @@ const GlobalSettingsContext = createContext();
 
 const GlobalSettingsProvider = ({ children }) => {
   const [units, setUnits] = useState("metric");
-  const [grid, setGrid] = useState(false);
 
   return (
-    <GlobalSettingsContext.Provider value={{ grid, setGrid, units, setUnits }}>
+    <GlobalSettingsContext.Provider value={{ units, setUnits }}>
       {children}
     </GlobalSettingsContext.Provider>
   );

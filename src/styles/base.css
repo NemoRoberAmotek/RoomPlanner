@@ -25,15 +25,22 @@ body *:focus {
   border-color: var(--color-primary);
 }
 
+.App {
+  min-height: 100vh;
+}
+
 .button-primary,
 .button-secondary,
 .button-default,
-.button-danger {
+.button-danger,
+.button-success {
   font-size: 0.833rem;
   font-weight: bold;
   padding: 0.5rem 1rem;
   border: 0;
   cursor: pointer;
+  display: inline-block;
+  text-decoration: none;
 }
 
 .button-icon {
@@ -66,6 +73,12 @@ body *:focus {
   border: 2px solid var(--color-danger);
   background-color: transparent;
   color: var(--color-danger);
+}
+
+.button-success {
+  background-color: var(--color-success);
+  color: white;
+  border: 2px solid var(--color-success);
 }
 
 .button-default {
@@ -283,9 +296,14 @@ small {
 
 .modal-inner {
   background-color: white;
-  padding: 4rem;
+  padding: 2rem 4rem 4rem 4rem;
   border-radius: 1rem;
   box-shadow: 0px 5px 15px 0px rgba(0, 0, 0, 15%);
+}
+
+.modal-top-bar {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .form-errors {
@@ -321,4 +339,52 @@ small {
 .input-with-icon input:focus ~ .input-icon-button,
 .input-with-icon input:focus-visible ~ .input-icon-button {
   border-color: var(--color-primary);
+}
+
+.account-menu-wrapper {
+  position: relative;
+}
+
+.account-menu {
+  position: absolute;
+  top: 34px;
+  right: 0;
+  left: 0;
+  background-color: white;
+  border-radius: 0.25rem;
+  box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 15%);
+}
+.icon-link {
+  display: flex;
+  align-items: center;
+  grid-gap: 0.5rem;
+  padding: 0.5rem;
+  cursor: pointer;
+  font-size: 0.833rem;
+  font-weight: bold;
+}
+
+.icon-link.reverse {
+  flex-direction: row-reverse;
+}
+
+.message {
+  position: absolute;
+  top: 2rem;
+  padding: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: white;
+  border-radius: 0.25rem;
+  box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 15%);
+  z-index: 15;
+}
+
+.message > .p-bold {
+  margin-bottom: 0.25rem;
+  color: var(--color-primary);
+}
+
+.message small {
+  color: var(--color-default);
 }

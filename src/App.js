@@ -6,10 +6,11 @@ import useLoader from "./hooks/useLoader";
 import useRenderAllowed from "./hooks/useRenderAllowed";
 import RoomProvider from "./contexts/RoomProvider";
 import ActionProvider from "./contexts/ActionProvider";
-import GlobalSettingsProvider from "./contexts/GlobalSettingsProvider";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { useAuth } from "./contexts/AuthProvider";
+import { Routes, Route } from "react-router-dom";
+import Dashboard from "./views/Dashboard";
+import Message from "./components/Message";
 
 const Main = lazy(() => import("./views/Main"));
 
@@ -17,29 +18,32 @@ function App() {
   const loader = useLoader();
   const renderAllowed = useRenderAllowed();
 
-  const { user, guest } = useAuth();
-
   if (!renderAllowed) return <RenderNotAllowed />;
 
   if (renderAllowed) {
     return (
       <div className="App">
-        {!guest && !user && <Welcome />}
-        {(guest || user) && (
-          <Suspense fallback={loader}>
-            <ErrorBoundary>
-              <GlobalSettingsProvider>
-                <ActionProvider>
-                  <DndProvider backend={HTML5Backend}>
-                    <RoomProvider>
-                      <Main />
-                    </RoomProvider>
-                  </DndProvider>
-                </ActionProvider>
-              </GlobalSettingsProvider>
-            </ErrorBoundary>
-          </Suspense>
-        )}
+        <Message />
+        <Routes>
+          <Route path="/" element={<Welcome />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route
+            path="/room/:id"
+            element={
+              <Suspense fallback={loader}>
+                <ErrorBoundary>
+                  <ActionProvider>
+                    <DndProvider backend={HTML5Backend}>
+                      <RoomProvider>
+                        <Main />
+                      </RoomProvider>
+                    </DndProvider>
+                  </ActionProvider>
+                </ErrorBoundary>
+              </Suspense>
+            }
+          />
+        </Routes>
       </div>
     );
   }

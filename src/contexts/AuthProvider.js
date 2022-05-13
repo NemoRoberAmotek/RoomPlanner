@@ -1,5 +1,7 @@
 import { useState, useEffect, createContext, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
+import { useMessage } from "./MessageProvider";
 
 const AuthContext = createContext();
 
@@ -9,14 +11,19 @@ const AuthProvider = ({ children }) => {
   const [userRooms, setUserRooms] = useState([]);
   const [token, setToken] = useState(null);
 
+  const { setMessage } = useMessage();
+
+  const navigate = useNavigate();
+
   useEffect(() => {
     const localToken = localStorage.getItem("token");
-    if (localToken) {
+    if (localToken && !user) {
       setToken(localToken);
       authUser(localToken);
       fetchRoomsByToken(localToken);
+      navigate("/dashboard");
     }
-  }, []);
+  }, [navigate, user]);
 
   const fetchRoomsByToken = async (token) => {
     const res = await fetch("http://localhost:5000/api/rooms", {
@@ -28,6 +35,40 @@ const AuthProvider = ({ children }) => {
     const data = await res.json();
 
     setUserRooms(data);
+  };
+
+  const updateRoom = async (roomData) => {
+    if (guest) return;
+
+    const res = await fetch(`http://localhost:5000/api/rooms/${roomData._id}`, {
+      method: "PUT",
+      headers: {
+        "Content-type": "Application/json",
+        "x-auth-token": token,
+      },
+      body: JSON.stringify({ ...roomData, lastSave: Date.now }),
+    });
+
+    const data = await res.json();
+
+    if (res.status === 200) {
+      setUserRooms((userRooms) =>
+        userRooms.map((userRoom) =>
+          userRoom._id === data._id ? data : userRoom
+        )
+      );
+      setMessage({
+        title: "Room was saved.",
+        content: `Your room '${data.name}' was successfully saved.`,
+      });
+    } else {
+      setMessage({
+        title: "An error occured.",
+        content: `Your room '${data.name}' could not be saved. Please try again later.`,
+      });
+    }
+
+    return res;
   };
 
   const registerUser = async (userData) => {
@@ -87,10 +128,12 @@ const AuthProvider = ({ children }) => {
     setToken(null);
     setGuest(false);
     localStorage.removeItem("token");
+    navigate("/");
   };
 
   const loginGuest = () => {
     setGuest(true);
+    navigate("/room/demo-room");
   };
 
   return (
@@ -105,6 +148,8 @@ const AuthProvider = ({ children }) => {
         loginUser,
         logoutUser,
         userRooms,
+        setUserRooms,
+        updateRoom,
       }}
     >
       {children}

@@ -14,7 +14,6 @@ const useEventListeners = () => {
   const onWindowKeyPress = useCallback(
     (e) => {
       if (e.target.nodeName !== "INPUT") {
-        console.log(e);
         if (e.key === "\x1A" && e.ctrlKey) {
           undo();
         } else if (e.key === "\x19" && e.ctrlKey) {
