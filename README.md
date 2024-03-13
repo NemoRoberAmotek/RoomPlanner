@@ -6,6 +6,9 @@ This project can be launched with or without the [Room Planner REST API](https:/
 
 Rooms will not be saved when the application is not connected to the REST API.
 
+A demo can be found [here](https://roomplanner.onrender.com/).
+The demo does not use the REST API, so only Guest mode is available.
+
 ### Setting the API URL
 
 Create a `.env` file with the base API url:
