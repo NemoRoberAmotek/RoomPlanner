@@ -1,4 +1,5 @@
 # Room Planner
+![image](https://github.com/NemoRoberAmotek/RoomPlanner/assets/114987218/2fc7d10b-fc89-4026-8b97-dece9059c898)
 
 ## Setup
 
