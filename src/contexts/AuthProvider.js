@@ -1,166 +1,165 @@
-import { useState, useEffect, createContext, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import PropTypes from "prop-types";
-import { useMessage } from "./MessageProvider";
+import { useState, useEffect, createContext, useContext } from "react"
+import { useNavigate } from "react-router-dom"
+import PropTypes from "prop-types"
+import { useMessage } from "./MessageProvider"
 
-const AuthContext = createContext();
+const AuthContext = createContext()
 
 const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [guest, setGuest] = useState(false);
-  const [userRooms, setUserRooms] = useState([]);
-  const [token, setToken] = useState(null);
+    const [user, setUser] = useState(null)
+    const [guest, setGuest] = useState(false)
+    const [userRooms, setUserRooms] = useState([])
+    const [token, setToken] = useState(null)
 
-  const { setMessage } = useMessage();
+    const { setMessage } = useMessage()
 
-  const navigate = useNavigate();
+    const navigate = useNavigate()
 
-  useEffect(() => {
-    const localToken = localStorage.getItem("token");
-    if (localToken && !user) {
-      setToken(localToken);
-      authUser(localToken);
-      fetchRoomsByToken(localToken);
-      navigate("/dashboard");
-    }
-  }, [navigate, user]);
+    useEffect(() => {
+        const localToken = localStorage.getItem("token")
+        if (localToken && !user) {
+            setToken(localToken)
+            authUser(localToken)
+            fetchRoomsByToken(localToken)
+            navigate("/dashboard")
+        }
+    }, [navigate, user])
 
-  const fetchRoomsByToken = async (token) => {
-    const res = await fetch("http://localhost:5000/api/rooms", {
-      headers: {
-        "x-auth-token": token,
-      },
-    });
+    const fetchRoomsByToken = async (token) => {
+        const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/rooms`, {
+            headers: {
+                "x-auth-token": token,
+            },
+        })
 
-    const data = await res.json();
+        const data = await res.json()
 
-    setUserRooms(data);
-  };
-
-  const updateRoom = async (roomData) => {
-    if (guest) return;
-
-    const res = await fetch(`http://localhost:5000/api/rooms/${roomData._id}`, {
-      method: "PUT",
-      headers: {
-        "Content-type": "Application/json",
-        "x-auth-token": token,
-      },
-      body: JSON.stringify({ ...roomData, lastSave: Date.now }),
-    });
-
-    const data = await res.json();
-
-    if (res.status === 200) {
-      setUserRooms((userRooms) =>
-        userRooms.map((userRoom) =>
-          userRoom._id === data._id ? data : userRoom
-        )
-      );
-      setMessage({
-        title: "Room was saved.",
-        content: `Your room '${data.name}' was successfully saved.`,
-      });
-    } else {
-      setMessage({
-        title: "An error occured.",
-        content: `Your room '${data.name}' could not be saved. Please try again later.`,
-      });
+        setUserRooms(data)
     }
 
-    return res;
-  };
+    const updateRoom = async (roomData) => {
+        if (guest) return
 
-  const registerUser = async (userData) => {
-    const res = await fetch("http://localhost:5000/api/users", {
-      method: "POST",
-      headers: {
-        "Content-type": "Application/json",
-      },
-      body: JSON.stringify(userData),
-    });
+        const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/rooms/${roomData._id}`, {
+            method: "PUT",
+            headers: {
+                "Content-type": "Application/json",
+                "x-auth-token": token,
+            },
+            body: JSON.stringify({ ...roomData, lastSave: Date.now }),
+        })
 
-    const data = await res.json();
+        const data = await res.json()
 
-    if (res.status === 200) {
-      authUser(data.token);
-      setToken(data.token);
-      localStorage.setItem("token", data.token);
+        if (res.status === 200) {
+            setUserRooms((userRooms) =>
+                userRooms.map((userRoom) =>
+                    userRoom._id === data._id ? data : userRoom
+                )
+            )
+            setMessage({
+                title: "Room was saved.",
+                content: `Your room '${data.name}' was successfully saved.`,
+            })
+        } else {
+            setMessage({
+                title: "An error occured.",
+                content: `Your room '${data.name}' could not be saved. Please try again later.`,
+            })
+        }
+
+        return res
     }
 
-    return data;
-  };
+    const registerUser = async (userData) => {
+        const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/users`, {
+            method: "POST",
+            headers: {
+                "Content-type": "Application/json",
+            },
+            body: JSON.stringify(userData),
+        })
 
-  const loginUser = async (credentials) => {
-    const res = await fetch("http://localhost:5000/api/auth", {
-      method: "POST",
-      headers: {
-        "Content-type": "Application/json",
-      },
-      body: JSON.stringify(credentials),
-    });
+        const data = await res.json()
 
-    const data = await res.json();
+        if (res.status === 200) {
+            authUser(data.token)
+            setToken(data.token)
+            localStorage.setItem("token", data.token)
+        }
 
-    if (res.status === 200) {
-      authUser(data.token);
-      fetchRoomsByToken(data.token);
-      setToken(data.token);
-      localStorage.setItem("token", data.token);
+        return data
     }
 
-    return data;
-  };
+    const loginUser = async (credentials) => {
+        const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/auth`, {
+            method: "POST",
+            headers: {
+                "Content-type": "Application/json",
+            },
+            body: JSON.stringify(credentials),
+        })
 
-  const authUser = async (token) => {
-    const res = await fetch("http://localhost:5000/api/auth", {
-      headers: {
-        "x-auth-token": token,
-      },
-    });
-    const data = await res.json();
+        const data = await res.json()
 
-    setUser(data);
-  };
+        if (res.status === 200) {
+            authUser(data.token)
+            fetchRoomsByToken(data.token)
+            setToken(data.token)
+            localStorage.setItem("token", data.token)
+        }
 
-  const logoutUser = () => {
-    setUser(null);
-    setToken(null);
-    setGuest(false);
-    localStorage.removeItem("token");
-    navigate("/");
-  };
+        return data
+    }
 
-  const loginGuest = () => {
-    setGuest(true);
-    navigate("/room/demo-room");
-  };
+    const authUser = async (token) => {
+        const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/auth`, {
+            headers: {
+                "x-auth-token": token,
+            },
+        })
+        const data = await res.json()
 
-  return (
-    <AuthContext.Provider
-      value={{
-        guest,
-        token,
-        loginGuest,
-        user,
-        setUser,
-        registerUser,
-        loginUser,
-        logoutUser,
-        userRooms,
-        setUserRooms,
-        updateRoom,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
-};
+        setUser(data)
+    }
 
-export const useAuth = () => useContext(AuthContext);
+    const logoutUser = () => {
+        setUser(null)
+        setToken(null)
+        setGuest(false)
+        localStorage.removeItem("token")
+        navigate("/")
+    }
+
+    const loginGuest = () => {
+        setGuest(true)
+        navigate("/room/demo-room")
+    }
+
+    return (
+        <AuthContext.Provider
+            value={{
+                guest,
+                token,
+                loginGuest,
+                user,
+                setUser,
+                registerUser,
+                loginUser,
+                logoutUser,
+                userRooms,
+                setUserRooms,
+                updateRoom,
+            }}>
+            {children}
+        </AuthContext.Provider>
+    )
+}
+
+export const useAuth = () => useContext(AuthContext)
 
 AuthProvider.propTypes = {
-  children: PropTypes.object.isRequired,
-};
+    children: PropTypes.object.isRequired,
+}
 
-export default AuthProvider;
+export default AuthProvider
